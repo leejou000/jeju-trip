@@ -172,9 +172,9 @@ const DAYS=[
  {t:"18:00",poll:"d3g",q2:["저녁 (고기국수 아니면 생선 백반)","Dinner (pork noodles or fish set meal)"],opts:[
    {n:["자매국수","Jamae Guksu"],q:"자매국수",ll:[33.512,126.505],pork:1,note:["공항 근처 고기국수. 내부 넓고 대기석, 주차 넉넉. 회전 빠름","Pork noodle soup near the airport. Big hall, waiting seats, ample parking, fast turnover"],w:[["웨이팅 매우 김: 캐치테이블 원격 대기 필수","Very long waits: use CatchTable remote waitlist"],["9명 OK","OK for 9","ok"]]},
    {n:["동도원","Dongdowon"],q:"동도원 제주",ll:[33.500,126.520],note:["공항 차로 9분. 고등어조림, 옥돔구이, 해물뚝배기에 반찬 12가지. 마감시간 확인","9 min from airport. Braised mackerel, grilled tilefish, seafood stew, 12 side dishes. Check closing time"]}]},
- {t:"19:00",poll:"d3n",q2:["도두 카페 아니면 동문시장","Dodu café or Dongmun Market"],opts:[
+ {t:"19:00",poll:"d3n",q2:["도두 카페 아니면 서문시장","Dodu café or Seomun Market"],opts:[
    {n:["도두 카페, 서연 공항 내려주기","Café in Dodu, drop Seoyeon at the airport"],q:"도두동 카페",ll:[33.507,126.475]},
-   {n:["제주 동문시장 야시장","Dongmun Market night market"],q:"제주 동문재래시장",ll:[33.512,126.527],note:["게시판 제안. 야시장은 보통 18:00~24:00. 공항까지 차로 10분 정도라 서연 공항 내려주기와 20:20 렌터카 반납에 맞출 수 있어요","From the board. Night market usually 18:00 to 24:00. About 10 min to the airport, so the Seoyeon drop-off and 20:20 car return still fit"]}]},
+   {n:["제주 서문시장","Jeju Seomun Market"],q:"제주 서문공설시장",ll:[33.511,126.516],note:["게시판 제안. 시장에서 고기를 사서 위층 정육식당에서 상차림비 내고 구워 먹는 곳. 공항까지 차로 10분 정도","From the board. Buy meat at the market and grill it at the restaurants upstairs for a table fee. About 10 min to the airport"],w:[["시장 마감 18:00~20:00 (출처마다 다름): 19:00이면 빠듯, 전화 확인","Closes 18:00 to 20:00 (sources differ): tight at 19:00, call ahead"]]}]},
  {t:"20:20",n:["렌터카 반납","Return rental cars"],note:["셔틀 타고 공항까지 20분 잡기","Allow 20 min for the shuttle"]},
  {t:"22:10",n:["제주 출발, 청주 23:20 도착","Fly Jeju 22:10, arrive Cheongju 23:20"],q:"제주국제공항",ll:[33.507,126.493],note:["대한항공. 20:10인지 22:10인지 항공권으로 확인","Korean Air. Confirm 20:10 vs 22:10 on the ticket"]}
 ]}];
@@ -300,7 +300,9 @@ const REPLIES={
  "1795658533318":"",
  "1795658936654":"",
  "1795659122147":["정현이 확인하고 정할게요","Jeonghyeon will decide on this"],
- "1795658570702":["3일차 19:00을 투표로 바꾸고 동문시장 야시장을 넣었어요 (「제주시문시장」을 동문시장으로 이해했어요. 다른 곳이면 다시 적어주세요)","Day 3 19:00 is now a vote with Dongmun Market night market (read as Dongmun Market; post again if you meant another)"]
+ "1795659145938":["채팅 기능은 정현이 확인하고 정할게요","Jeonghyeon will decide on the chat feature"],
+ "1795659146546":["채팅 기능은 정현이 확인하고 정할게요","Jeonghyeon will decide on the chat feature"],
+ "1795658570702":["3일차 19:00을 투표로 바꾸고 제주 서문시장을 넣었어요. 시장이 18:00~20:00쯤 닫는다는 정보가 있어서 19:00이면 빠듯해요","Day 3 19:00 is now a vote with Jeju Seomun Market. It may close around 18:00 to 20:00, so 19:00 is tight"]
 };
 let POSTS=[],BOARD=false; // BOARD: 서버가 게시판을 아는 새 버전인지 (옛 서버에 글을 보내면 투표가 지워짐)
 function setPosts(ps){
