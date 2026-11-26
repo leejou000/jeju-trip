@@ -101,9 +101,8 @@ const T={
   day:["Day 1","Day 2","Day 3"],date:["Wed 12/2","Thu 12/3","Fri 12/4"]}};
 
 const MEMBERS=[["prof","교수님","Professor"],["daun","다운","Daun"],["jh","정현","Jeonghyeon"],["sh","수현","Suhyeon"],["camila","카밀라","Camila"],["sy","서연","Seoyeon"],["jw","지원","Jiwon"],["yw","예원","Yewon"],["jiu","지우","Jiwoo"]];
-// 사람마다 jsonblob 하나. setup.html로 만든 ID를 넣는다
-const BLOBS={prof:"",daun:"",jh:"",sh:"",camila:"",sy:"",jw:"",yw:"",jiu:""};
-const API="https://jsonblob.com/api/jsonBlob/";
+// 투표 저장: 구글 시트 Apps Script 웹 앱 주소 (apps-script.gs 참고)
+const API="";
 
 const DAYS=[
 {id:"d1",stops:[
@@ -221,13 +220,11 @@ function drawStatus(){
   $("status").className="status"+(["needMe","saveFail","offline"].includes(k)?" bad":"");
 }
 async function load(){
-  const ms=MEMBERS.filter(m=>BLOBS[m[0]]),v=ver;
-  const res=await Promise.all(ms.map(m=>fetch(API+BLOBS[m[0]],{headers:{Accept:"application/json"},cache:"no-store"})
-    .then(r=>r.ok?r.json():Promise.reject()).then(j=>[m[0],clean(j&&j.picks)]).catch(()=>null)));
-  const ok=res.filter(Boolean);
-  if(!ok.length){net="off";drawStatus();return}
+  const v=ver;let all=null;
+  if(API)try{const r=await fetch(API,{cache:"no-store"});const j=await r.json();if(j&&j.ok&&j.picks&&typeof j.picks==="object")all=j.picks}catch(e){}
+  if(!all){net="off";drawStatus();return}
   const before=JSON.stringify(PICKS);
-  ok.forEach(([k,p])=>{if(k!==me||(!pending&&v===ver))PICKS[k]=p});
+  MEMBERS.forEach(([k])=>{if(k!==me||(!pending&&v===ver))PICKS[k]=clean(all[k])});
   net="on";syncedAt=new Date();
   if(JSON.stringify(PICKS)!==before){drawMap();drawList()}
   drawStatus();
@@ -240,7 +237,8 @@ async function vote(pid,o){
   drawMap();drawList();drawStatus();
   const b=$("list").querySelector(`[data-v="${pid}:${o}"]`);if(b)b.focus();
   let ok=false;
-  if(BLOBS[me])try{const r=await fetch(API+BLOBS[me],{method:"PUT",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({picks:mine})});ok=r.ok}catch(e){}
+  // text/plain이라야 Apps Script가 사전 요청(CORS preflight) 없이 받는다
+  if(API)try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({who:me,picks:mine})});const j=await r.json();ok=!!(j&&j.ok)}catch(e){}
   pending--;if(ok)net="on";else msg="saveFail";
   drawStatus();
 }
