@@ -137,6 +137,8 @@ const T={
 
 const MEMBERS=[["prof","교수님","Professor"],["daun","다운","Daun"],["jh","정현","Jeonghyeon"],["sh","수현","Suhyeon"],["camila","카밀라","Camila"],["sy","서연","Seoyeon"],["jw","지원","Jiwon"],["yw","예원","Yewon"],["jiu","지우","Jiwoo"],["jc","재창","Jaechang"]];
 // 투표 저장: 구글 시트 Apps Script 웹 앱 주소 (apps-script.gs 참고)
+// 채팅 저장: Firebase 실시간 데이터베이스 주소. 비어 있으면 채팅도 Apps Script(구글 시트)로
+const FB="";
 const API="https://script.google.com/macros/s/AKfycbynF56nOnf1mpoclcbLBYztL6a8lEc-WcLuTXhxc8w4VZBEMArdIxCouAH5YUnlvwEbDg/exec";
 
 const DAYS=[
@@ -377,7 +379,24 @@ document.addEventListener("submit",e=>{if(e.target.id==="bform"){e.preventDefaul
 // PEND: 내가 보냈지만 아직 서버 목록에 안 보이는 메시지. 보내자마자 화면에 띄워서 느리게 느껴지지 않게
 let CHAT=false,MSGS=[],PEND=[],lastChat=0;
 function setChat(cs){
+  if(FB)return; // Firebase를 쓰면 채팅은 스트림으로 받는다
   CHAT=Array.isArray(cs);if(!CHAT){drawChatState();return}
+  setChatList(cs);
+}
+// Firebase 실시간 데이터베이스: SDK 없이 REST 스트림(EventSource)으로 새 메시지를 바로 받는다
+const FBM={};
+function startFB(){
+  if(!FB||!window.EventSource)return;
+  const es=new EventSource(FB+"/chat.json");
+  const apply=()=>{CHAT=true;setChatList(Object.values(FBM).sort((a,b)=>(+a.t||0)-(+b.t||0)).slice(-200))};
+  es.addEventListener("put",e=>{const d=JSON.parse(e.data),parts=d.path.split("/").filter(Boolean);
+    if(!parts.length){for(const k in FBM)delete FBM[k];Object.assign(FBM,d.data||{})}
+    else if(parts.length===1){if(d.data===null)delete FBM[parts[0]];else FBM[parts[0]]=d.data}
+    apply()});
+  es.addEventListener("patch",e=>{const d=JSON.parse(e.data);if(d.path==="/")Object.assign(FBM,d.data||{});apply()});
+  es.onerror=()=>{CHAT=false;drawChatState()}; // 브라우저가 알아서 다시 붙고, 붙으면 put이 와서 CHAT이 다시 켜진다
+}
+function setChatList(cs){
   const next=cs.filter(c=>c&&MEMBERS.some(m=>m[0]===c.who)&&typeof c.text==="string").map(c=>({t:+c.t||0,who:c.who,text:c.text.slice(0,300)}));
   const n0=PEND.length;PEND=PEND.filter(p=>p.sending||!next.some(c=>c.who===p.who&&c.text===p.text&&c.t>=p.t-60000));
   if(JSON.stringify(next)!==JSON.stringify(MSGS)||PEND.length!==n0){if(MSGS.length&&next.length>MSGS.length)lastChat=Date.now();MSGS=next;drawMsgs()}
@@ -405,7 +424,10 @@ async function sendChat(){
   const p={t:Date.now(),who:me,text,pend:true,sending:true};PEND.push(p);lastChat=Date.now();
   $("ctext").value="";m.textContent="";m.className="status";const el=$("msgs");if(el)el.dataset.init="";drawMsgs();$("ctext").focus();
   let ok=false;
-  try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"chat",who:me,text})});const j=await r.json();ok=!!(j&&j.ok)}catch(e){}
+  try{
+    if(FB){const r=await fetch(FB+"/chat.json",{method:"POST",body:JSON.stringify({who:me,text,t:{".sv":"timestamp"}})});ok=r.ok}
+    else{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"chat",who:me,text})});const j=await r.json();ok=!!(j&&j.ok)}
+  }catch(e){}
   p.sending=false;
   if(ok){load()}else{PEND=PEND.filter(x=>x!==p);drawMsgs();if(!$("ctext").value)$("ctext").value=text;m.textContent=t("cFail");m.className="status bad"}
 }
@@ -472,9 +494,9 @@ document.addEventListener("click",e=>{
   if(b.dataset.m){me=b.dataset.m;try{localStorage.setItem("jeju-me",me)}catch(x){}if(msg==="needMe")msg="";drawMe();drawStatus();drawList();return}
   if(b.dataset.v){const [p,o]=b.dataset.v.split(":");vote(p,o)}
 });
-render();
+render();startFB();
 // 채팅 칸에 쓰는 중이거나 최근 1분 반 안에 채팅이 오갔으면 2초, 아니면 5초마다 새로 읽는다
-(function tick(){const fast=(document.activeElement&&document.activeElement.id==="ctext")||Date.now()-lastChat<90000;if(!document.hidden)load();setTimeout(tick,fast?2000:5000)})();
+(function tick(){const fast=!FB&&((document.activeElement&&document.activeElement.id==="ctext")||Date.now()-lastChat<90000);if(!document.hidden)load();setTimeout(tick,fast?2000:5000)})();
 loadWx();setInterval(loadWx,30*60*1000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
 }

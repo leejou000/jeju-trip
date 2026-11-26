@@ -1,0 +1,17 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "chat": {
+      ".read": true,
+      "$id": {
+        ".write": "!data.exists()",
+        ".validate": "newData.hasChildren(['who', 'text', 't']) && newData.child('who').isString() && newData.child('who').val().matches(/^(prof|daun|jh|sh|camila|sy|jw|yw|jiu|jc)$/) && newData.child('text').isString() && newData.child('text').val().length > 0 && newData.child('text').val().length <= 300 && newData.child('t').isNumber() && newData.child('t').val() <= now",
+        "who": { ".validate": true },
+        "text": { ".validate": true },
+        "t": { ".validate": true },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}
