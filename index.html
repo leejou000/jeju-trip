@@ -146,7 +146,9 @@ const DAYS=[
    {n:["제주오성 중문본점","Jeju Oseong Jungmun"],q:"제주오성 중문본점",ll:[33.252,126.413],note:["오전 11시 전 아침 메뉴 1만원. 전복죽, 성게미역국, 뚝배기, 솥밥","₩10,000 breakfast before 11am: abalone porridge, sea urchin soup, stews"]},
    {n:["아침 안 먹기","Skip breakfast"],note:["숙소에서 쉬다가 학회장으로","Rest, then go to the conference"]}]},
  {t:"10:00",n:["학회 참석","Conference"],q:"제주국제컨벤션센터",ll:[33.241,126.413]},
- {t:"12:00",n:["점심: 원조 중문 보말칼국수","Lunch: Wonjo Jungmun Bomal Kalguksu"],q:"원조 중문 보말칼국수",ll:[33.252,126.419],pork:1,note:["몸국(돼지 육수), 흑돼지수육. 자리 넓음. 월요일만 휴무","Momguk (pork broth), boiled pork. Roomy. Closed Mondays"],w:[["주차 어려움","Tight parking"]],alt:["같은 가게에서 보말칼국수나 보말죽","Sea snail noodles or porridge at the same place"]},
+ {t:"12:00",poll:"d2l",q2:["점심 (보말칼국수 아니면 다운 추천 식당)","Lunch (sea snail noodles or Daun's pick)"],opts:[
+   {n:["원조 중문 보말칼국수","Wonjo Jungmun Bomal Kalguksu"],q:"원조 중문 보말칼국수",ll:[33.252,126.419],pork:1,note:["몸국(돼지 육수), 흑돼지수육. 자리 넓음. 월요일만 휴무","Momguk (pork broth), boiled pork. Roomy. Closed Mondays"],w:[["주차 어려움","Tight parking"]],alt:["같은 가게에서 보말칼국수나 보말죽","Sea snail noodles or porridge at the same place"]},
+   {n:["다운 추천 식당","Daun's restaurant pick"],href:"https://map.naver.com/p/entry/place/16928656",note:["게시판 제안. 가게 이름과 메뉴는 링크에서 확인","From the board. Check the name and menu at the link"],w:[["돼지고기 메뉴, 9명 자리 확인 필요","Check pork dishes and seating for 9"]]}]},
  {t:"13:30",poll:"d2d",q2:["귤 따기 아니면 카페","Tangerine picking or café"],opts:[
    {n:["귤 따기 체험","Tangerine picking"],href:"https://naver.me/FJbQqnkU",note:["보내준 링크의 농장. 위치는 링크에서 확인","Farm from the shared link"]},
    {n:["나우카페 제주 (중문)","Now Cafe Jeju (Jungmun)"],q:"나우카페 제주 중문",ll:[33.252,126.410],note:["중문 베이커리 카페","Bakery café in Jungmun"]}]},
@@ -170,7 +172,9 @@ const DAYS=[
  {t:"18:00",poll:"d3g",q2:["저녁 (고기국수 아니면 생선 백반)","Dinner (pork noodles or fish set meal)"],opts:[
    {n:["자매국수","Jamae Guksu"],q:"자매국수",ll:[33.512,126.505],pork:1,note:["공항 근처 고기국수. 내부 넓고 대기석, 주차 넉넉. 회전 빠름","Pork noodle soup near the airport. Big hall, waiting seats, ample parking, fast turnover"],w:[["웨이팅 매우 김: 캐치테이블 원격 대기 필수","Very long waits: use CatchTable remote waitlist"],["9명 OK","OK for 9","ok"]]},
    {n:["동도원","Dongdowon"],q:"동도원 제주",ll:[33.500,126.520],note:["공항 차로 9분. 고등어조림, 옥돔구이, 해물뚝배기에 반찬 12가지. 마감시간 확인","9 min from airport. Braised mackerel, grilled tilefish, seafood stew, 12 side dishes. Check closing time"]}]},
- {t:"19:00",n:["도두 카페, 서연 공항 내려주기","Café in Dodu, drop Seoyeon at the airport"],q:"도두동 카페",ll:[33.507,126.475]},
+ {t:"19:00",poll:"d3n",q2:["도두 카페 아니면 동문시장","Dodu café or Dongmun Market"],opts:[
+   {n:["도두 카페, 서연 공항 내려주기","Café in Dodu, drop Seoyeon at the airport"],q:"도두동 카페",ll:[33.507,126.475]},
+   {n:["제주 동문시장 야시장","Dongmun Market night market"],q:"제주 동문재래시장",ll:[33.512,126.527],note:["게시판 제안. 야시장은 보통 18:00~24:00. 공항까지 차로 10분 정도라 서연 공항 내려주기와 20:20 렌터카 반납에 맞출 수 있어요","From the board. Night market usually 18:00 to 24:00. About 10 min to the airport, so the Seoyeon drop-off and 20:20 car return still fit"]}]},
  {t:"20:20",n:["렌터카 반납","Return rental cars"],note:["셔틀 타고 공항까지 20분 잡기","Allow 20 min for the shuttle"]},
  {t:"22:10",n:["제주 출발, 청주 23:20 도착","Fly Jeju 22:10, arrive Cheongju 23:20"],q:"제주국제공항",ll:[33.507,126.493],note:["대한항공. 20:10인지 22:10인지 항공권으로 확인","Korean Air. Confirm 20:10 vs 22:10 on the ticket"]}
 ]}];
@@ -291,7 +295,10 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 // Claude가 게시판 글을 처리하고 남긴 답. 키 = 글의 at 값, 값 = [한국어, English]. 빈 문자열이면 답 없이 처리만 한 것
 // 시트 E열에 정현이 직접 적은 답이 있으면 그쪽이 먼저 보인다
 const REPLIES={
- "1795658413893":"" // 정현 시험 글
+ "1795658413893":"", // 정현 시험 글
+ "1795658491225":["2일차 12:00 점심 투표에 「다운 추천 식당」으로 넣었어요. 링크가 네이버 앱에서만 열려서 가게 이름을 못 봤어요, 이름을 한 번 더 적어주세요","Added to the Day 2 lunch vote as \"Daun's pick\". The link only opens in the Naver app, so please post the restaurant name"],
+ "1795658533318":"",
+ "1795658570702":["3일차 19:00을 투표로 바꾸고 동문시장 야시장을 넣었어요 (「제주시문시장」을 동문시장으로 이해했어요. 다른 곳이면 다시 적어주세요)","Day 3 19:00 is now a vote with Dongmun Market night market (read as Dongmun Market; post again if you meant another)"]
 };
 let POSTS=[],BOARD=false; // BOARD: 서버가 게시판을 아는 새 버전인지 (옛 서버에 글을 보내면 투표가 지워짐)
 function setPosts(ps){
