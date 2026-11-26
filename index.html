@@ -73,7 +73,9 @@ ol.list{list-style:none;margin:0;padding:0}
 .send{border:0;background:var(--tang);color:#fff;border-radius:10px;padding:8px 18px;font:600 15px "IBM Plex Sans KR",sans-serif;min-height:44px;cursor:pointer}
 .send:disabled{opacity:.5}
 .board .status{margin:6px 0 0}
-.posts{list-style:none;margin:8px 0 0;padding:0 6px 0 0;max-height:420px;overflow-y:auto}.posts li{padding:12px 0;border-top:1px solid var(--line)}
+.posts{list-style:none;margin:8px 0 0;padding:0 6px 0 0;max-height:420px;overflow-y:auto}
+.posts.in{max-height:none;overflow:visible;padding:0;margin:0}
+.arch summary{cursor:pointer;color:var(--mute);font-size:14px;font-weight:600;min-height:32px;padding-top:4px}.posts li{padding:12px 0;border-top:1px solid var(--line)}
 .phead{display:flex;align-items:center;flex-wrap:wrap;gap:2px}.pat{margin-left:auto;font-size:13px;color:var(--mute)}
 .ptext{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:2px}
 .msgs{max-height:340px;overflow-y:auto;background:var(--bg);border-radius:10px;padding:8px 10px;margin-top:10px;display:flex;flex-direction:column;gap:6px}
@@ -117,7 +119,7 @@ const T={
   loading:"투표 불러오는 중",saving:"저장 중",synced:s=>s+" 기준 투표 현황, 5초마다 새로 읽어요",
   bH:"제안 게시판",bP:"바꾸고 싶은 일정, 가고 싶은 곳, 추가하고 싶은 것을 적어주세요. 정현이 보고 반영하면 답을 달아요.",
   bDay:"관련 날짜",bAll:"전체 일정",bPh:"예: 2일차 오후에 쇠소깍도 가고 싶어요",bSend:"올리기",bEmpty:"아직 글이 없어요",
-  bFail:"글이 안 올라갔어요, 다시 눌러주세요",bSent:"올렸어요 ✓",bReply:"답",
+  bFail:"글이 안 올라갔어요, 다시 눌러주세요",bSent:"올렸어요 ✓",bReply:"답",bNone:"해결 안 된 글이 없어요",bArch:n=>"해결된 글 "+n+"개 보기",
   cH:"채팅",cP:"아무 이야기나 편하게. 일정에 반영할 제안은 아래 게시판에 적어주세요.",cPh:"메시지 입력",cSend:"보내기",cEmpty:"아직 메시지가 없어요",cFail:"안 보내졌어요, 다시 눌러주세요",cOff:"채팅 서버 준비 중이에요",
   day:["1일차","2일차","3일차"],date:["12/2 수","12/3 목","12/4 금"]},
  en:{h1:"Lab trip to Jeju",sub:"Wed Dec 2 to Fri Dec 4, staying at Booyoung Resort in Jungmun. Tap your name, then vote on the stops that have options. Tap a place name or map pin to open it in Naver Map.",
@@ -128,7 +130,7 @@ const T={
   loading:"Loading votes",saving:"Saving",synced:s=>"Votes as of "+s+", refreshed every 5 s",
   bH:"Suggestion board",bP:"Want to change a stop, go somewhere, or add something? Write it here. Jeonghyeon will reply once it's reflected.",
   bDay:"Related day",bAll:"Whole trip",bPh:"e.g. I'd also like to see Soesokkak on Day 2 afternoon",bSend:"Post",bEmpty:"No posts yet",
-  bFail:"Didn't post, please try again",bSent:"Posted ✓",bReply:"Reply",
+  bFail:"Didn't post, please try again",bSent:"Posted ✓",bReply:"Reply",bNone:"No open posts",bArch:n=>"Show "+n+" resolved posts",
   cH:"Chat",cP:"Talk about anything. Put suggestions for the schedule on the board below.",cPh:"Type a message",cSend:"Send",cEmpty:"No messages yet",cFail:"Not sent, please try again",cOff:"Chat server is getting ready",
   day:["Day 1","Day 2","Day 3"],date:["Wed 12/2","Thu 12/3","Fri 12/4"]}};
 
@@ -314,12 +316,15 @@ const REPLIES={
  "1795659122147":["채팅 만들었어요. 일정 아래 「채팅」에서 바로 이야기하세요","Chat is added; use the Chat box below the schedule"],
  "1795659376816":["점검해 봤는데 규칙대로 나오고 있어요. 차는 그 차에 탄 사람들 표의 다수를 따르고, 운전자는 동점일 때만 정해요 (정현이 정한 규칙). 예: 1일차 16:50은 다운은 a지만 같은 차 수현, 카밀라가 b라서 다운 차가 b예요","Checked: it follows the rule. Each car follows its riders' majority; the driver only breaks ties (Jeonghyeon's rule). E.g. Day 1 16:50: Daun picked a but Suhyeon and Camila in the same car picked b"],
  "1795659400212":"",
+ "1795659589269":["해결된 글은 「해결된 글 N개 보기」를 눌러야 보이게 접었어요. 위에는 해결 안 된 글만 보여요","Resolved posts are folded under \"Show N resolved posts\"; only open posts show on top"],
  "1795659510890":["게시판 글 목록에 세로 스크롤을 넣었어요 (높이 고정). 위에 채팅도 새로 생겼어요","The board list now scrolls inside a fixed height. A chat box was also added above it"],
  "1795659423324":["날씨 줄 아래에 최근 30년(1996~2025) 그날 평균을 넣었어요. 평년 최고 12° 안팎인데 지금 예보는 19°라 꽤 따뜻한 편이에요","Added the 30-year (1996 to 2025) average under the forecast. Normal high is about 12°, the forecast says 19°, so warmer than usual"],
  "1795659145938":["채팅 만들었어요. 일정 아래 「채팅」에서 바로 이야기하세요","Chat is added; use the Chat box below the schedule"],
  "1795659146546":["채팅 만들었어요. 일정 아래 「채팅」에서 바로 이야기하세요","Chat is added; use the Chat box below the schedule"],
  "1795658570702":["3일차 19:00을 투표로 바꾸고 제주 동문시장 야시장을 넣었어요 (보통 18:00~24:00)","Day 3 19:00 is now a vote with Jeju Dongmun Market night market (usually 18:00 to 24:00)"]
 };
+const OPEN=[]; // 정현 판단을 기다리는 글의 at (문자열). 정하면 빼고 REPLIES 답을 바꾼다
+let archOpen=false;document.addEventListener("toggle",e=>{if(e.target.id==="arch")archOpen=e.target.open},true);
 let POSTS=[],BOARD=false; // BOARD: 서버가 게시판을 아는 새 버전인지 (옛 서버에 글을 보내면 투표가 지워짐)
 function setPosts(ps){
   BOARD=Array.isArray(ps);
@@ -340,7 +345,13 @@ function drawBoard(){
 function drawPosts(){
   const el=$("posts");if(!el)return;
   const nm=k=>mname(MEMBERS.find(m=>m[0]===k)),when=at=>at?new Date(at).toLocaleString(lang==="ko"?"ko-KR":"en-US",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
-  el.innerHTML=POSTS.length?POSTS.map(p=>`<li><div class="phead"><b>${esc(nm(p.who))}</b>${p.day?`<span class="tag">${t("day")[+p.day[1]-1]}</span>`:""}<span class="pat">${when(p.at)}</span></div><div class="ptext">${esc(p.text)}</div>${(()=>{const r=p.reply||(REPLIES[p.at]?L(REPLIES[p.at]):"");return r?`<div class="alt"><b>${t("bReply")}</b> ${esc(r)}</div>`:""})()}</li>`).join(""):`<li class="note">${t("bEmpty")}</li>`;
+  const item=p=>`<li><div class="phead"><b>${esc(nm(p.who))}</b>${p.day?`<span class="tag">${t("day")[+p.day[1]-1]}</span>`:""}<span class="pat">${when(p.at)}</span></div><div class="ptext">${esc(p.text)}</div>${(()=>{const r=p.reply||(REPLIES[p.at]?L(REPLIES[p.at]):"");return r?`<div class="alt"><b>${t("bReply")}</b> ${esc(r)}</div>`:""})()}</li>`;
+  // 해결된 글 = 답이 있거나 Claude가 처리한 글(REPLIES 키). 정현 판단을 기다리는 글(OPEN)은 계속 위에 보인다
+  const done=p=>!OPEN.includes(String(p.at))&&(!!p.reply||String(p.at) in REPLIES);
+  const open=POSTS.filter(p=>!done(p)),closed=POSTS.filter(done);
+  el.innerHTML=!POSTS.length?`<li class="note">${t("bEmpty")}</li>`
+    :(open.length?open.map(item).join(""):`<li class="note">${t("bNone")}</li>`)
+    +(closed.length?`<li class="arch"><details id="arch"${archOpen?" open":""}><summary>${t("bArch")(closed.length)}</summary><ul class="posts in">${closed.map(item).join("")}</ul></details></li>`:"");
 }
 async function post(){
   const m=$("bmsg"),text=$("btext").value.trim();
