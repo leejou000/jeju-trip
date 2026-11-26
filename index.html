@@ -37,7 +37,9 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--tang);outline-offse
 .tab[aria-selected=true]{background:var(--ink);color:var(--bg)}
 .tab small{display:block;font-weight:400;font-size:13px;opacity:.75}
 .fig{margin-bottom:18px;position:relative;background:var(--sea);border-radius:18px;overflow:hidden;aspect-ratio:800/455}
-.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.fig svg{position:absolute;inset:0;width:100%;height:100%;cursor:grab}
+.zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 20px/1 sans-serif;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .wx{margin:-4px 2px 12px;font-size:15px}.wx small{color:var(--mute);font-size:13px}
 .hint{font-size:13px;color:var(--mute);margin:6px 2px 18px}
 ol.list{list-style:none;margin:0;padding:0}
@@ -104,7 +106,7 @@ ol.list{list-style:none;margin:0;padding:0}
   <p class="status" id="status" role="status"></p>
   <div class="tabs" role="tablist" id="tabs"></div>
   <p class="wx" id="wx"></p>
-  <div class="fig"><svg id="map" viewBox="0 0 800 455" role="img" aria-label="map"></svg></div>
+  <div class="fig"><svg id="map" viewBox="0 0 800 455" role="img" aria-label="map"></svg><div class="zoom"><button data-z="1" aria-label="확대 zoom in">+</button><button data-z="-1" aria-label="축소 zoom out">−</button><button data-z="0" aria-label="원래대로 reset">⟲</button></div></div>
   <ol class="list" id="list"></ol>
   <section class="board" id="chat"></section>
   <section class="board" id="board"></section>
@@ -190,9 +192,10 @@ const DAYS=[
    {n:["제주오성 중문본점","Jeju Oseong Jungmun"],q:"제주오성 중문본점",ll:[33.252,126.413],note:["고집돌우럭이 10시에 열어서 대신. 오전 11시 전 아침 메뉴 1만원. 전복죽, 성게미역국, 뚝배기, 솥밥","Replaces Gojip Dol Ureok (opens at 10). ₩10,000 breakfast before 11am: abalone porridge, sea urchin soup, stews"]}]},
  {t:"10:30",n:["체크아웃","Check out"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428]},
  {t:"10:50",n:["카멜리아힐 (동백)","Camellia Hill"],q:"카멜리아힐",ll:[33.290,126.369],note:["12월이 동백철","December is camellia season"]},
- {t:"12:30",poll:"d3d",q2:["점심 (흑돼지 아니면 해산물)","Lunch (black pork or seafood)"],opts:[
+ {t:"12:30",poll:"d3d",q2:["점심 (흑돼지, 해산물, 말고기 중에서)","Lunch (black pork, seafood, or horse meat)"],opts:[
    {n:["도민상회본점 한림협재흑돼지","Domin Sanghoe (black pork)"],q:"도민상회본점 제주한림협재흑돼지",ll:[33.392,126.245],pork:1,note:["숙성 흑돼지 + 찌개 + 밥 세트","Aged black pork set with stew and rice"],w:[["웨이팅, 단체 정보 없음: 전화 확인","No wait or group info: call ahead"]],alt:["같은 가게 해물된장찌개(딱새우, 전복)","Seafood doenjang stew at the same place"]},
-   {n:["한림 바다생각","Hallim Badasaenggak"],q:"한림 바다생각",ll:[33.414,126.262],note:["은갈치와 해산물. 한림항 근처 주민과 선원 단골집","Silver hairtail and seafood; a local favorite by Hallim port"]}]},
+   {n:["한림 바다생각","Hallim Badasaenggak"],q:"한림 바다생각",ll:[33.414,126.262],note:["은갈치와 해산물. 한림항 근처 주민과 선원 단골집","Silver hairtail and seafood; a local favorite by Hallim port"]},
+   {n:["고우니 제주를 담다 (말고기)","Gouni (horse meat, Aewol)"],q:"고우니 제주를 담다",ll:[33.464,126.318],note:["정현 요청. 애월해안로 857. 말고기 회, 육회, 구이. 전복과 말고기 삼합 1인 3만 원 안팎. 한림에서 차로 20분, 오후 한담과 가까움","Jeonghyeon's pick. Aewol coastal road 857. Horse meat sashimi, tartare and grill; abalone and horse meat set about ₩30,000 each. 20 min from Hallim, close to Handam"],w:[["영업시간, 9명 자리 전화 확인","Call for hours and seating for 9"]],alt:["말고기라 돼지고기 걱정 없음","Horse meat, so no pork worries"]}]},
  {t:"14:00",poll:"d3p",q2:["협재 해변 아니면 패러글라이딩","Hyeopjae Beach or paragliding"],opts:[
    {n:["협재 해변, 바다 보이는 카페","Hyeopjae Beach and a seaside café"],q:"협재해수욕장",ll:[33.394,126.239]},
    {n:["제주 하늘을 날다 (한림 패러글라이딩)","Jeju Haneureul Nalda paragliding (Hallim)"],q:"제주 하늘을 날다 패러글라이딩",ll:[33.354,126.307],note:["서연 제안. 한림읍 금오름 일대에서 강사와 둘이 타는 체험, 비행 4~6분. 1인 8만 원대. 협재에서 차로 15분","Seoyeon's pick. Tandem flight with an instructor from Geumoreum, Hallim; 4 to 6 min in the air. About ₩85,000 each. 15 min from Hyeopjae"],w:[["바람, 비에 따라 당일 취소될 수 있음: 예약 필요 (010-9632-0422)","May be cancelled for wind or rain that day; booking needed (010-9632-0422)"]]}]},
@@ -292,7 +295,8 @@ function drawMap(){
   const R=455/800,cw=$("map").clientWidth||800;
   let w=Math.max(x1-x0,170),h=Math.max(y1-y0,w*R);w=Math.max(w,h/R);
   w*=1.35;h=w*R; // 둘레 여백과 오른쪽 위 번호표 자리
-  const s=w/cw,cx=(x0+x1)/2+w*0.03,cy=(y0+y1)/2-h*0.04;
+  let cx=(x0+x1)/2+w*0.03,cy=(y0+y1)/2-h*0.04;
+  w/=MZ.k;h/=MZ.k;cx+=MZ.x;cy+=MZ.y;MZ.s=w/cw;const s=MZ.s; // 사용자가 확대하고 끈 만큼
   $("map").setAttribute("viewBox",`${(cx-w/2).toFixed(1)} ${(cy-h/2).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
   let svgp="";
   [...groups.values()].forEach(g=>{
@@ -308,6 +312,22 @@ function drawMap(){
    ${lines2}${svgp}`;
 }
 let rsz;addEventListener("resize",()=>{clearTimeout(rsz);rsz=setTimeout(drawMap,150)});
+// 지도 확대, 축소, 끌기. k=확대 배율(1=그날 지점이 다 보이는 크기), x, y=끈 만큼(지도 단위), s=화면 1px당 지도 단위
+// 폰에서는 확대했을 때만 한 손가락으로 지도를 끌고(touch-action:none), 확대 안 했으면 평소처럼 페이지가 스크롤된다
+const MZ={k:1,x:0,y:0,s:1};
+function setZoom(k){MZ.k=Math.min(8,Math.max(1,k));if(MZ.k===1){MZ.x=0;MZ.y=0}$("map").style.touchAction=MZ.k>1?"none":"";drawMap()}
+{
+  const svg=$("map"),ptr=new Map();let moved=0,pd0=0,k0=1;
+  svg.addEventListener("pointerdown",e=>{ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=0;
+    if(ptr.size===2){const [a,b]=[...ptr.values()];pd0=Math.hypot(a.x-b.x,a.y-b.y);k0=MZ.k}});
+  svg.addEventListener("pointermove",e=>{const p=ptr.get(e.pointerId);if(!p)return;
+    if(ptr.size===1){if(e.pointerType==="touch"&&MZ.k===1)return;
+      const dx=e.clientX-p.x,dy=e.clientY-p.y;moved+=Math.abs(dx)+Math.abs(dy);p.x=e.clientX;p.y=e.clientY;
+      if(moved>4){if(!svg.hasPointerCapture(e.pointerId))svg.setPointerCapture(e.pointerId);MZ.x-=dx*MZ.s;MZ.y-=dy*MZ.s;drawMap()}}
+    else if(ptr.size===2){p.x=e.clientX;p.y=e.clientY;const [a,b]=[...ptr.values()];if(pd0){moved=99;setZoom(k0*Math.hypot(a.x-b.x,a.y-b.y)/pd0)}}});
+  ["pointerup","pointercancel"].forEach(t=>svg.addEventListener(t,e=>{ptr.delete(e.pointerId);if(ptr.size<2)pd0=0}));
+  svg.addEventListener("click",e=>{if(moved>4){e.preventDefault();e.stopPropagation()}},true); // 끈 뒤에 핀 링크가 열리지 않게
+}
 const link=x=>x.q?`<a href="${nav(x.q)}" target="_blank" rel="noopener">${L(x.n)}</a>`:x.href?`<a href="${x.href}" target="_blank" rel="noopener">${L(x.n)}</a>`:L(x.n);
 const extra=x=>`${x.note?`<div class="note">${L(x.note)}</div>`:""}${x.w?`<div class="warn">${x.w.map(w=>`<span${w[2]?' class="ok"':""}>${L(w)}</span>`).join("")}</div>`:""}${x.alt?`<div class="alt"><b>${t("altT")}</b> ${L(x.alt)}</div>`:""}`;
 const porkTag=x=>x.pork?`<span class="tag">🐷 ${t("pork")}</span>`:"";
@@ -351,6 +371,7 @@ const REPLIES={
  "1795661209761":["바꿨어요. 차는 운전자가 고른 곳으로 가요 (정현 결정)","Done: each car now goes where its driver picked (Jeonghyeon's call)"],
  "1795669846033":["2일차 15:30 투표에 「중문승마공원」을 넣었어요 (10:00~17:00)","Added Jungmun Horse Riding Park to the Day 2 15:30 vote (10:00 to 17:00)"],
  "1795669861321":["3일차 14:00을 「협재 해변 아니면 패러글라이딩」 투표로 바꾸고 한림 금오름 패러글라이딩을 넣었어요","Day 3 14:00 is now \"Hyeopjae Beach or paragliding\" with tandem paragliding at Geumoreum, Hallim"],
+ "1795673395993":["3일차 12:30 점심 투표에 말고기 집 「고우니 제주를 담다」(애월)를 넣었어요. 지도는 오른쪽 위 +, −, ⟲ 버튼으로 확대, 축소하고, 확대하면 끌거나 두 손가락으로 움직일 수 있어요","Added the horse meat place Gouni (Aewol) to the Day 3 12:30 lunch vote. The map now has +, −, ⟲ buttons; once zoomed in you can drag or pinch"],
  "1795673287185":["승마를 15:30에서 빼고 13:30 「귤 따기, 카페, 휴양림, 승마」 투표로 옮겼어요","Moved horse riding from 15:30 into the 13:30 vote with tangerine picking"],
  "1795670074614":["맞아요, 고집돌우럭은 10시에 열어요. 3일차 아침은 제주오성 중문본점(11시 전 아침 메뉴)으로 바꾸고, 고집돌우럭에 넣은 표는 제주오성으로 옮겼어요","Right, Gojip opens at 10. Day 3 breakfast is now Jeju Oseong (breakfast menu before 11), and Gojip votes moved there"],
  "1795669882916":["정보 고마워요. 승마장 주소(이어도로 244)와 패러글라이딩 업체(제주 하늘을 날다, 연락처)를 선택지에 넣었어요","Thanks: added the riding park address and the paragliding company with its contact to the options"],
@@ -536,11 +557,12 @@ async function loadWx(){
 }
 function render(){drawChrome();drawMe();drawStatus();drawMap();drawList();drawBoard();drawChat()}
 document.addEventListener("click",e=>{
-  const b=e.target.closest("[data-l],[data-d],[data-m],[data-v],[data-pm],#pickX");if(!b)return;
+  const b=e.target.closest("[data-l],[data-d],[data-m],[data-v],[data-pm],[data-z],#pickX");if(!b)return;
   if(b.id==="pickX"){$("pick").close();nextAct=null;return}
   if(b.dataset.pm){me=b.dataset.pm;try{localStorage.setItem("jeju-me",me)}catch(x){}msg="";$("pick").close();drawMe();drawStatus();drawList();drawMsgs();const f=nextAct;nextAct=null;if(f)f();return}
   if(b.dataset.l){lang=b.dataset.l;try{localStorage.setItem("jeju-lang",lang)}catch(x){}render();return}
-  if(b.dataset.d){day=b.dataset.d;drawChrome();drawMap();drawList();return}
+  if(b.dataset.z){const z=+b.dataset.z;setZoom(z?MZ.k*(z>0?1.6:1/1.6):1);return}
+  if(b.dataset.d){day=b.dataset.d;MZ.k=1;MZ.x=0;MZ.y=0;$("map").style.touchAction="";drawChrome();drawMap();drawList();return}
   if(b.dataset.m){me=b.dataset.m;try{localStorage.setItem("jeju-me",me)}catch(x){}if(msg==="needMe")msg="";drawMe();drawStatus();drawList();return}
   if(b.dataset.v){const [p,o]=b.dataset.v.split(":");vote(p,o)}
 });
