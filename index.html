@@ -183,9 +183,10 @@ const DAYS=[
 ]},
 {id:"d3",stops:[
  {t:"08:30",poll:"d3a",q2:["아침 (메뉴는 바뀔 수 있음)","Breakfast (menu may change)"],opts:[
-   {n:["고집돌우럭 중문점","Gojip Dol Ureok Jungmun"],q:"고집돌우럭 중문점",ll:[33.255,126.421],note:["아침 8시부터 한식 아침. 전복죽, 옥돔구이. 점심엔 매우 붐빔","Korean breakfast from 8am. Very busy at lunch"]},
+   {gone:1,n:["고집돌우럭 중문점","Gojip Dol Ureok Jungmun"],q:"고집돌우럭 중문점",ll:[33.255,126.421],note:["공식 영업 10:00부터라 아침엔 못 감","Opens at 10:00, so no breakfast"]},
    {n:["아침 안 먹기","Skip breakfast"],note:["체크아웃 준비하면서 숙소에서","Pack up before checkout"]},
-   {n:["호텔 조식 (부영 리조트)","Hotel breakfast (Booyoung Resort)"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428],note:["다운 제안. 숙소 안이라 이동 없음. 가격과 시간은 프런트에서 확인","Daun's pick. In the resort, no driving. Check price and hours at the front desk"]}]},
+   {n:["호텔 조식 (부영 리조트)","Hotel breakfast (Booyoung Resort)"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428],note:["다운 제안. 숙소 안이라 이동 없음. 가격과 시간은 프런트에서 확인","Daun's pick. In the resort, no driving. Check price and hours at the front desk"]},
+   {n:["제주오성 중문본점","Jeju Oseong Jungmun"],q:"제주오성 중문본점",ll:[33.252,126.413],note:["고집돌우럭이 10시에 열어서 대신. 오전 11시 전 아침 메뉴 1만원. 전복죽, 성게미역국, 뚝배기, 솥밥","Replaces Gojip Dol Ureok (opens at 10). ₩10,000 breakfast before 11am: abalone porridge, sea urchin soup, stews"]}]},
  {t:"10:30",n:["체크아웃","Check out"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428]},
  {t:"10:50",n:["카멜리아힐 (동백)","Camellia Hill"],q:"카멜리아힐",ll:[33.290,126.369],note:["12월이 동백철","December is camellia season"]},
  {t:"12:30",poll:"d3d",q2:["점심 (흑돼지 아니면 해산물)","Lunch (black pork or seafood)"],opts:[
@@ -349,6 +350,7 @@ const REPLIES={
  "1795661209761":["바꿨어요. 차는 운전자가 고른 곳으로 가요 (정현 결정)","Done: each car now goes where its driver picked (Jeonghyeon's call)"],
  "1795669846033":["2일차 15:30 투표에 「중문승마공원」을 넣었어요 (10:00~17:00)","Added Jungmun Horse Riding Park to the Day 2 15:30 vote (10:00 to 17:00)"],
  "1795669861321":["3일차 14:00을 「협재 해변 아니면 패러글라이딩」 투표로 바꾸고 한림 금오름 패러글라이딩을 넣었어요","Day 3 14:00 is now \"Hyeopjae Beach or paragliding\" with tandem paragliding at Geumoreum, Hallim"],
+ "1795670074614":["맞아요, 고집돌우럭은 10시에 열어요. 3일차 아침은 제주오성 중문본점(11시 전 아침 메뉴)으로 바꾸고, 고집돌우럭에 넣은 표는 제주오성으로 옮겼어요","Right, Gojip opens at 10. Day 3 breakfast is now Jeju Oseong (breakfast menu before 11), and Gojip votes moved there"],
  "1795669882916":["정보 고마워요. 승마장 주소(이어도로 244)와 패러글라이딩 업체(제주 하늘을 날다, 연락처)를 선택지에 넣었어요","Thanks: added the riding park address and the paragliding company with its contact to the options"],
  "1795667800061":["바꿨어요. 3일차 저녁 생선 쪽은 착한집 제주공항본점이에요. 동도원에 투표한 분은 다시 골라주세요","Done: the fish option for Day 3 dinner is now Chakhanjip near the airport. If you voted for Dongdowon, please pick again"],
  "1795667429404":["맞아요, 동도원은 중문이라 빼고 공항 근처 착한집으로 바꿨어요","Right: Dongdowon is in Jungmun, so it was swapped for Chakhanjip near the airport"],
