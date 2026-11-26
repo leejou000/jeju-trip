@@ -82,6 +82,7 @@ ol.list{list-style:none;margin:0;padding:0}
 .msg{max-width:85%;align-self:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px}
 .msg.mine{align-self:flex-end;background:var(--tang2);border-color:transparent}
 .mwho{display:block;font-size:13px;font-weight:600;color:var(--mute)}.msg.mine .mwho{display:none}
+.msg.pend{opacity:.6}
 .mtext{white-space:pre-wrap;overflow-wrap:anywhere}.mt{display:block;font-size:12px;color:var(--mute);text-align:right}
 #cform input{flex:1;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:44px}
 #cform input:focus{outline:3px solid var(--tang);outline-offset:1px}
@@ -120,7 +121,7 @@ const T={
   bH:"제안 게시판",bP:"바꾸고 싶은 일정, 가고 싶은 곳, 추가하고 싶은 것을 적어주세요. 정현이 보고 반영하면 답을 달아요.",
   bDay:"관련 날짜",bAll:"전체 일정",bPh:"예: 2일차 오후에 쇠소깍도 가고 싶어요",bSend:"올리기",bEmpty:"아직 글이 없어요",
   bFail:"글이 안 올라갔어요, 다시 눌러주세요",bSent:"올렸어요 ✓",bReply:"답",bNone:"해결 안 된 글이 없어요",bArch:n=>"해결된 글 "+n+"개 보기",
-  cH:"채팅",cP:"아무 이야기나 편하게. 일정에 반영할 제안은 아래 게시판에 적어주세요.",cPh:"메시지 입력",cSend:"보내기",cEmpty:"아직 메시지가 없어요",cFail:"안 보내졌어요, 다시 눌러주세요",cOff:"채팅 서버 준비 중이에요",
+  cH:"채팅",cP:"아무 이야기나 편하게. 일정에 반영할 제안은 아래 게시판에 적어주세요.",cPh:"메시지 입력",cSend:"보내기",cEmpty:"아직 메시지가 없어요",cFail:"안 보내졌어요, 다시 눌러주세요",cOff:"채팅 서버 준비 중이에요",cSending:"보내는 중",
   day:["1일차","2일차","3일차"],date:["12/2 수","12/3 목","12/4 금"]},
  en:{h1:"Lab trip to Jeju",sub:"Wed Dec 2 to Fri Dec 4, staying at Booyoung Resort in Jungmun. Tap your name, then vote on the stops that have options. Tap a place name or map pin to open it in Naver Map.",
   hint:"The two cars can split at each choice. Each car follows the majority of its own riders; on a tie, the driver (Daun or Jeonghyeon) decides. On Day 2 Daun's car seats 7, so people regroup by what they picked; who rides where is listed under each stop. Jaechang drives his own car and joins what he likes, so he isn't counted in the two cars. Orange is Daun's car, blue shows where Jeonghyeon's car splits off, hollow pins are places neither car goes. The island outline is approximate.",
@@ -131,7 +132,7 @@ const T={
   bH:"Suggestion board",bP:"Want to change a stop, go somewhere, or add something? Write it here. Jeonghyeon will reply once it's reflected.",
   bDay:"Related day",bAll:"Whole trip",bPh:"e.g. I'd also like to see Soesokkak on Day 2 afternoon",bSend:"Post",bEmpty:"No posts yet",
   bFail:"Didn't post, please try again",bSent:"Posted ✓",bReply:"Reply",bNone:"No open posts",bArch:n=>"Show "+n+" resolved posts",
-  cH:"Chat",cP:"Talk about anything. Put suggestions for the schedule on the board below.",cPh:"Type a message",cSend:"Send",cEmpty:"No messages yet",cFail:"Not sent, please try again",cOff:"Chat server is getting ready",
+  cH:"Chat",cP:"Talk about anything. Put suggestions for the schedule on the board below.",cPh:"Type a message",cSend:"Send",cEmpty:"No messages yet",cFail:"Not sent, please try again",cOff:"Chat server is getting ready",cSending:"Sending",
   day:["Day 1","Day 2","Day 3"],date:["Wed 12/2","Thu 12/3","Fri 12/4"]}};
 
 const MEMBERS=[["prof","교수님","Professor"],["daun","다운","Daun"],["jh","정현","Jeonghyeon"],["sh","수현","Suhyeon"],["camila","카밀라","Camila"],["sy","서연","Seoyeon"],["jw","지원","Jiwon"],["yw","예원","Yewon"],["jiu","지우","Jiwoo"],["jc","재창","Jaechang"]];
@@ -316,6 +317,7 @@ const REPLIES={
  "1795659122147":["채팅 만들었어요. 일정 아래 「채팅」에서 바로 이야기하세요","Chat is added; use the Chat box below the schedule"],
  "1795659376816":["점검해 봤는데 규칙대로 나오고 있어요. 차는 그 차에 탄 사람들 표의 다수를 따르고, 운전자는 동점일 때만 정해요 (정현이 정한 규칙). 예: 1일차 16:50은 다운은 a지만 같은 차 수현, 카밀라가 b라서 다운 차가 b예요","Checked: it follows the rule. Each car follows its riders' majority; the driver only breaks ties (Jeonghyeon's rule). E.g. Day 1 16:50: Daun picked a but Suhyeon and Camila in the same car picked b"],
  "1795659400212":"",
+ "1795659949731":["보낸 메시지가 바로 뜨게 바꾸고, 채팅 중에는 2초마다 새로 읽어요","Your message now shows instantly, and chat refreshes every 2 s while you are chatting"],
  "1795659589269":["해결된 글은 「해결된 글 N개 보기」를 눌러야 보이게 접었어요. 위에는 해결 안 된 글만 보여요","Resolved posts are folded under \"Show N resolved posts\"; only open posts show on top"],
  "1795659510890":["게시판 글 목록에 세로 스크롤을 넣었어요 (높이 고정). 위에 채팅도 새로 생겼어요","The board list now scrolls inside a fixed height. A chat box was also added above it"],
  "1795659423324":["날씨 줄 아래에 최근 30년(1996~2025) 그날 평균을 넣었어요. 평년 최고 12° 안팎인데 지금 예보는 19°라 꽤 따뜻한 편이에요","Added the 30-year (1996 to 2025) average under the forecast. Normal high is about 12°, the forecast says 19°, so warmer than usual"],
@@ -364,11 +366,13 @@ async function post(){
 }
 document.addEventListener("submit",e=>{if(e.target.id==="bform"){e.preventDefault();post()}if(e.target.id==="cform"){e.preventDefault();sendChat()}});
 // 채팅: 시트 「채팅」 탭. CHAT은 서버가 채팅을 아는 새 버전인지 (옛 서버에 보내면 투표가 지워짐)
-let CHAT=false,MSGS=[];
+// PEND: 내가 보냈지만 아직 서버 목록에 안 보이는 메시지. 보내자마자 화면에 띄워서 느리게 느껴지지 않게
+let CHAT=false,MSGS=[],PEND=[],lastChat=0;
 function setChat(cs){
   CHAT=Array.isArray(cs);if(!CHAT){drawChatState();return}
   const next=cs.filter(c=>c&&MEMBERS.some(m=>m[0]===c.who)&&typeof c.text==="string").map(c=>({t:+c.t||0,who:c.who,text:c.text.slice(0,300)}));
-  if(JSON.stringify(next)!==JSON.stringify(MSGS)){MSGS=next;drawMsgs()}
+  const n0=PEND.length;PEND=PEND.filter(p=>p.sending||!next.some(c=>c.who===p.who&&c.text===p.text&&c.t>=p.t-60000));
+  if(JSON.stringify(next)!==JSON.stringify(MSGS)||PEND.length!==n0){if(MSGS.length&&next.length>MSGS.length)lastChat=Date.now();MSGS=next;drawMsgs()}
   drawChatState();
 }
 function drawChat(){
@@ -382,18 +386,20 @@ function drawMsgs(){
   const el=$("msgs");if(!el)return;
   const near=el.scrollHeight-el.scrollTop-el.clientHeight<60;
   const nm=k=>mname(MEMBERS.find(m=>m[0]===k)),hm=x=>x?new Date(x).toLocaleTimeString(lang==="ko"?"ko-KR":"en-US",{hour:"2-digit",minute:"2-digit"}):"";
-  el.innerHTML=MSGS.length?MSGS.map(c=>`<div class="msg${c.who===me?" mine":""}"><span class="mwho">${esc(nm(c.who))}</span><span class="mtext">${esc(c.text)}</span><span class="mt">${hm(c.t)}</span></div>`).join(""):`<p class="note">${t("cEmpty")}</p>`;
+  const all=MSGS.concat(PEND);
+  el.innerHTML=all.length?all.map(c=>`<div class="msg${c.who===me?" mine":""}${c.pend?" pend":""}"><span class="mwho">${esc(nm(c.who))}</span><span class="mtext">${esc(c.text)}</span><span class="mt">${c.pend?t("cSending"):hm(c.t)}</span></div>`).join(""):`<p class="note">${t("cEmpty")}</p>`;
   if(near||!el.dataset.init){el.scrollTop=el.scrollHeight;el.dataset.init=1}
 }
 async function sendChat(){
   const m=$("cmsg"),text=$("ctext").value.trim();
   if(!me){m.textContent=t("needMe");m.className="status bad";$("me").scrollIntoView({block:"center"});return}
   if(!text||!CHAT)return;
-  const b=$("csend");b.disabled=true;b.dataset.busy=1;let ok=false;
+  const p={t:Date.now(),who:me,text,pend:true,sending:true};PEND.push(p);lastChat=Date.now();
+  $("ctext").value="";m.textContent="";m.className="status";const el=$("msgs");if(el)el.dataset.init="";drawMsgs();$("ctext").focus();
+  let ok=false;
   try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"chat",who:me,text})});const j=await r.json();ok=!!(j&&j.ok)}catch(e){}
-  delete b.dataset.busy;b.disabled=false;
-  if(ok){$("ctext").value="";m.textContent="";m.className="status";const el=$("msgs");if(el)el.dataset.init="";load()}else{m.textContent=t("cFail");m.className="status bad"}
-  $("ctext").focus();
+  p.sending=false;
+  if(ok){load()}else{PEND=PEND.filter(x=>x!==p);drawMsgs();if(!$("ctext").value)$("ctext").value=text;m.textContent=t("cFail");m.className="status bad"}
 }
 let busy=false;
 async function load(){
@@ -458,7 +464,9 @@ document.addEventListener("click",e=>{
   if(b.dataset.m){me=b.dataset.m;try{localStorage.setItem("jeju-me",me)}catch(x){}if(msg==="needMe")msg="";drawMe();drawStatus();drawList();return}
   if(b.dataset.v){const [p,o]=b.dataset.v.split(":");vote(p,o)}
 });
-render();load();setInterval(()=>{if(!document.hidden)load()},5000);
+render();
+// 채팅 칸에 쓰는 중이거나 최근 1분 반 안에 채팅이 오갔으면 2초, 아니면 5초마다 새로 읽는다
+(function tick(){const fast=(document.activeElement&&document.activeElement.id==="ctext")||Date.now()-lastChat<90000;if(!document.hidden)load();setTimeout(tick,fast?2000:5000)})();
 loadWx();setInterval(loadWx,30*60*1000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
 }
