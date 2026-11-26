@@ -182,7 +182,9 @@ const DAYS=[
    {n:["도민상회본점 한림협재흑돼지","Domin Sanghoe (black pork)"],q:"도민상회본점 제주한림협재흑돼지",ll:[33.392,126.245],pork:1,note:["숙성 흑돼지 + 찌개 + 밥 세트","Aged black pork set with stew and rice"],w:[["웨이팅, 단체 정보 없음: 전화 확인","No wait or group info: call ahead"]],alt:["같은 가게 해물된장찌개(딱새우, 전복)","Seafood doenjang stew at the same place"]},
    {n:["한림 바다생각","Hallim Badasaenggak"],q:"한림 바다생각",ll:[33.414,126.262],note:["은갈치와 해산물. 한림항 근처 주민과 선원 단골집","Silver hairtail and seafood; a local favorite by Hallim port"]}]},
  {t:"14:00",n:["협재 해변, 바다 보이는 카페","Hyeopjae Beach and a seaside café"],q:"협재해수욕장",ll:[33.394,126.239]},
- {t:"16:00",n:["애월 한담 해안산책로","Aewol Handam coastal walk"],q:"한담해안산책로",ll:[33.462,126.310],note:["여기서 자매국수 캐치테이블 원격 대기 걸기","Join Jamae Guksu's CatchTable waitlist from here"]},
+ {t:"16:00",poll:"d3w",q2:["한담 산책 아니면 9.81파크","Handam walk or 9.81 Park"],opts:[
+   {n:["애월 한담 해안산책로","Aewol Handam coastal walk"],q:"한담해안산책로",ll:[33.462,126.310],note:["여기서 자매국수 캐치테이블 원격 대기 걸기","Join Jamae Guksu's CatchTable waitlist from here"]},
+   {n:["9.81파크 (중력 레이싱 카트)","9.81 Park (gravity racing karts)"],q:"9.81파크 제주",ll:[33.392,126.362],note:["서연 제안. 엔진 없이 내리막을 달리는 레이싱 카트 테마파크, 애월 중산간. 보통 09:00~18:00. 자매국수 캐치테이블 대기는 여기서 걸기","Seoyeon's pick. Engine-free downhill racing karts, inland Aewol. Usually 09:00 to 18:00. Join Jamae Guksu's waitlist from here"],w:[["눈, 비 오면 운영 중단될 수 있음: 당일 확인 (1833-9810)","May close in snow or rain: check that day (1833-9810)"]]}]},
  {t:"18:00",poll:"d3g",q2:["저녁 (고기국수 아니면 생선 백반)","Dinner (pork noodles or fish set meal)"],opts:[
    {n:["자매국수","Jamae Guksu"],q:"자매국수",ll:[33.512,126.505],pork:1,note:["공항 근처 고기국수. 내부 넓고 대기석, 주차 넉넉. 회전 빠름","Pork noodle soup near the airport. Big hall, waiting seats, ample parking, fast turnover"],w:[["웨이팅 매우 김: 캐치테이블 원격 대기 필수","Very long waits: use CatchTable remote waitlist"],["9명 OK","OK for 9","ok"]]},
    {n:["동도원","Dongdowon"],q:"동도원 제주",ll:[33.500,126.520],note:["공항 차로 9분. 고등어조림, 옥돔구이, 해물뚝배기에 반찬 12가지. 마감시간 확인","9 min from airport. Braised mackerel, grilled tilefish, seafood stew, 12 side dishes. Check closing time"]}]},
@@ -320,6 +322,8 @@ const REPLIES={
  "1795659400212":"",
  "1795660024591":["방금 고쳤어요. 엔터 치면 내 메시지가 바로 뜨고, 채팅 중엔 2초마다 새로 읽어요. 안 바뀌어 보이면 새로고침 한 번 해주세요","Just fixed: your message shows right after Enter, and chat refreshes every 2 s. Refresh once if it still looks old"],
  "1795660026998":["2일차 15:30 투표에 「제주 중문카트」를 세 번째 선택지로 넣었어요","Added Jungmun Go-Kart as a third option to the Day 2 15:30 vote"],
+ "1795660191595":["3일차 16:00을 「한담 산책 아니면 9.81파크」 투표로 바꿨어요. 애월 동선 안쪽이라 잘 맞아요","Day 3 16:00 is now \"Handam walk or 9.81 Park\"; it sits right on the Aewol route"],
+ "1795660207897":["눈, 비에 멈출 수 있어서 선택지에 「당일 운영 확인」 태그를 달았어요. 30년 통계로는 그날 비 온 해가 30년 중 9번이에요","Tagged it \"check that day\" since it can close in snow or rain; it rained on that date in 9 of the last 30 years"],
  "1795660049935":["찾아보니 레이저아레나엑스(중문랜드 1층)는 실내 레이저 서바이벌만 있고 카트나 루지는 없어요. 카트는 근처 「제주 중문카트」로 같은 시간 선택지에 넣었어요","Laser Arena X (Jungmun Land) only has indoor laser tag, no karts or luge. Karts are at the nearby Jungmun Go-Kart, added to the same slot"],
  "1795659949731":["보낸 메시지가 바로 뜨게 바꾸고, 채팅 중에는 2초마다 새로 읽어요","Your message now shows instantly, and chat refreshes every 2 s while you are chatting"],
  "1795659589269":["해결된 글은 「해결된 글 N개 보기」를 눌러야 보이게 접었어요. 위에는 해결 안 된 글만 보여요","Resolved posts are folded under \"Show N resolved posts\"; only open posts show on top"],
