@@ -36,7 +36,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--tang);outline-offse
 .tab{flex:1 0 auto;border:0;border-radius:12px;padding:10px 16px;font:600 16px "IBM Plex Sans KR",sans-serif;background:var(--card);color:var(--ink);min-height:48px;cursor:pointer;box-shadow:0 1px 0 var(--line)}
 .tab[aria-selected=true]{background:var(--ink);color:var(--bg)}
 .tab small{display:block;font-weight:400;font-size:13px;opacity:.75}
-.fig{position:relative;background:var(--sea);border-radius:18px;overflow:hidden;aspect-ratio:800/455}
+.fig{margin-bottom:18px;position:relative;background:var(--sea);border-radius:18px;overflow:hidden;aspect-ratio:800/455}
 .fig svg{position:absolute;inset:0;width:100%;height:100%}
 .wx{margin:-4px 2px 12px;font-size:15px}.wx small{color:var(--mute);font-size:13px}
 .hint{font-size:13px;color:var(--mute);margin:6px 2px 18px}
@@ -105,7 +105,6 @@ ol.list{list-style:none;margin:0;padding:0}
   <div class="tabs" role="tablist" id="tabs"></div>
   <p class="wx" id="wx"></p>
   <div class="fig"><svg id="map" viewBox="0 0 800 455" role="img" aria-label="map"></svg></div>
-  <p class="hint" id="hint"></p>
   <ol class="list" id="list"></ol>
   <section class="board" id="chat"></section>
   <section class="board" id="board"></section>
@@ -279,18 +278,29 @@ function drawMap(){
   const lines=(same?[0]:[1,0]).map(ci=>`<polyline class="route" points="${pts(routes[ci])}" fill="none" stroke="${same?CARS[0].c:CARS[ci].c}" stroke-width="${ci?5:3.5}" stroke-linecap="round" stroke-linejoin="round"/>`).join("");
   const groups=new Map();
   pins.forEach(p=>{const k=p.ll.join();if(!groups.has(k))groups.set(k,{...p,labs:[]});const g=groups.get(k);g.labs.push(p.lab);if(p.main)g.main=true});
+  // 그날 지점들만 보이게 확대한다. 핀과 글자는 화면 픽셀 기준 크기로 그려서 폰에서도 작아지지 않게 (s = 화면 1px당 지도 단위)
+  const xy=[...groups.values()].map(g=>P(g.ll));
+  let x0=Math.min(...xy.map(p=>p[0])),x1=Math.max(...xy.map(p=>p[0])),y0=Math.min(...xy.map(p=>p[1])),y1=Math.max(...xy.map(p=>p[1]));
+  if(!xy.length){x0=0;x1=800;y0=0;y1=455}
+  const R=455/800,cw=$("map").clientWidth||800;
+  let w=Math.max(x1-x0,170),h=Math.max(y1-y0,w*R);w=Math.max(w,h/R);
+  w*=1.35;h=w*R; // 둘레 여백과 오른쪽 위 번호표 자리
+  const s=w/cw,cx=(x0+x1)/2+w*0.03,cy=(y0+y1)/2-h*0.04;
+  $("map").setAttribute("viewBox",`${(cx-w/2).toFixed(1)} ${(cy-h/2).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
   let svgp="";
   [...groups.values()].forEach(g=>{
-    const [x,y]=P(g.ll),lab=g.labs.join(","),w=12+lab.length*7.5,fill=g.main?"#e8700c":"#fff",tc=g.main?"#fff":"#e8700c";
-    svgp+=`<a href="${nav(g.q)}" target="_blank" rel="noopener"><title>${g.name}</title><circle cx="${x}" cy="${y}" r="5" fill="#fff" stroke="#e8700c" stroke-width="3"/><rect x="${x+7}" y="${y-23}" width="${w}" height="20" rx="10" fill="${fill}" stroke="#e8700c" stroke-width="1.5"/><text x="${x+7+w/2}" y="${y-9}" text-anchor="middle" font-size="13" font-weight="600" fill="${tc}" font-family="sans-serif">${lab}</text></a>`;
+    const [x,y]=P(g.ll),lab=g.labs.join(","),bw=(14+lab.length*8)*s,fill=g.main?"#e8700c":"#fff",tc=g.main?"#fff":"#e8700c";
+    svgp+=`<a href="${nav(g.q)}" target="_blank" rel="noopener"><title>${g.name}</title><circle cx="${x}" cy="${y}" r="${5*s}" fill="#fff" stroke="#e8700c" stroke-width="${3*s}"/><rect x="${x+7*s}" y="${y-25*s}" width="${bw}" height="${22*s}" rx="${11*s}" fill="${fill}" stroke="#e8700c" stroke-width="${1.5*s}"/><text x="${x+7*s+bw/2}" y="${y-9.5*s}" text-anchor="middle" font-size="${14*s}" font-weight="600" fill="${tc}" font-family="sans-serif">${lab}</text></a>`;
   });
-  const [hx,hy]=P([33.362,126.533]),[jx,jy]=P([33.515,126.53]),[sx,sy]=P([33.25,126.56]);
-  $("map").innerHTML=`<polygon points="${isl}" fill="var(--land)" stroke="var(--land2)" stroke-width="6" stroke-linejoin="round"/><polygon points="${hx-46},${hy+26} ${hx},${hy-22} ${hx+46},${hy+26}" fill="var(--land2)"/>
-   <text x="${hx}" y="${hy+44}" text-anchor="middle" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"한라산":"Hallasan"}</text>
-   <text x="${jx}" y="${jy+26}" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"제주시":"Jeju City"}</text>
-   <text x="${sx}" y="${sy-16}" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"서귀포":"Seogwipo"}</text>
-   ${lines}${svgp}`;
+  const lines2=lines.replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${v*s}"`);
+  const [hx,hy]=P([33.362,126.533]),[jx,jy]=P([33.515,126.53]),[sx,sy]=P([33.25,126.56]),f=13*s;
+  $("map").innerHTML=`<polygon points="${isl}" fill="var(--land)" stroke="var(--land2)" stroke-width="${6*s}" stroke-linejoin="round"/><polygon points="${hx-46},${hy+26} ${hx},${hy-22} ${hx+46},${hy+26}" fill="var(--land2)"/>
+   <text x="${hx}" y="${hy+44}" text-anchor="middle" font-size="${f}" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"한라산":"Hallasan"}</text>
+   <text x="${jx}" y="${jy+26}" font-size="${f}" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"제주시":"Jeju City"}</text>
+   <text x="${sx}" y="${sy-16}" font-size="${f}" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"서귀포":"Seogwipo"}</text>
+   ${lines2}${svgp}`;
 }
+let rsz;addEventListener("resize",()=>{clearTimeout(rsz);rsz=setTimeout(drawMap,150)});
 const link=x=>x.q?`<a href="${nav(x.q)}" target="_blank" rel="noopener">${L(x.n)}</a>`:x.href?`<a href="${x.href}" target="_blank" rel="noopener">${L(x.n)}</a>`:L(x.n);
 const extra=x=>`${x.note?`<div class="note">${L(x.note)}</div>`:""}${x.w?`<div class="warn">${x.w.map(w=>`<span${w[2]?' class="ok"':""}>${L(w)}</span>`).join("")}</div>`:""}${x.alt?`<div class="alt"><b>${t("altT")}</b> ${L(x.alt)}</div>`:""}`;
 const porkTag=x=>x.pork?`<span class="tag">🐷 ${t("pork")}</span>`:"";
@@ -332,6 +342,7 @@ const REPLIES={
  "1795660026998":["2일차 15:30 투표에 「제주 중문카트」를 세 번째 선택지로 넣었어요","Added Jungmun Go-Kart as a third option to the Day 2 15:30 vote"],
  "1795661346537":["바꿨어요. 이제 모든 날 운전자는 자기 차에 고정, 차는 운전자가 고른 곳으로 가고, 나머지는 고른 쪽 차에 타요","Done: on every day the driver stays with their car, the car goes where the driver picked, and everyone else rides to their own pick"],
  "1795661209761":["바꿨어요. 차는 운전자가 고른 곳으로 가요 (정현 결정)","Done: each car now goes where its driver picked (Jeonghyeon's call)"],
+ "1795663625437":["지도 아래 설명을 빼고, 지도가 그날 지점들만 확대해서 보여요. 번호표 크기도 폰에서 읽을 수 있게 키웠어요","Removed the text under the map; the map now zooms to that day's stops with phone-readable labels"],
  "1795661807879":["고쳤어요. 이름을 안 고르고 고르기, 올리기, 보내기를 누르면 이름 고르기 창이 뜨고, 이름을 누르면 그 동작이 바로 이어져요","Fixed: tapping Pick, Post, or Send without a name opens a name picker, and your tap goes through right after you choose"],
  "1795661382147":["보말칼국수는 빼고 몸국, 보말국 파는 몰고랑식당(서귀포 시내)을 넣었어요. 멜국까지 파는 집은 못 찾아서 메뉴는 전화로 확인해야 해요. 아침 포함 모든 일정에서 차는 운전자 선택을 따라요","Removed the sea snail noodle place and added Molgorang (momguk, sea snail soup) in Seogwipo; couldn't confirm anchovy soup. Every stop, breakfast included, now follows the driver's pick"],
  "1795661425949":["재창이가 고른 선택지에 「🚙 재창 차」 태그가 붙어요","Jaechang's pick now shows a \"🚙 Jaechang's car\" tag"],
@@ -481,7 +492,7 @@ async function vote(pid,o){
 }
 function drawChrome(){
   document.documentElement.lang=lang;document.title=t("h1");
-  $("h1").textContent=t("h1");$("sub").textContent=t("sub");$("hint").textContent=t("hint");$("foot").textContent=t("foot");
+  $("h1").textContent=t("h1");$("sub").textContent=t("sub");$("foot").textContent=t("foot");
   document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===lang));
   $("tabs").innerHTML=DAYS.map((d,i)=>{const w=wxDay(i);return `<button class="tab" role="tab" aria-selected="${d.id===day}" data-d="${d.id}">${t("day")[i]}<small>${t("date")[i]}${w?` ${w.e} ${w.hi}°`:""}</small></button>`}).join("");
   drawWx();
