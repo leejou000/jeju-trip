@@ -113,7 +113,7 @@ ol.list{list-style:none;margin:0;padding:0}
 {
 const T={
  ko:{h1:"연구실 제주 여행",sub:"12월 2일(수)부터 4일(금)까지, 숙소는 중문 부영 리조트. 내 이름을 누르고 선택지가 있는 일정에 투표하세요. 장소 이름이나 지도 핀을 누르면 네이버지도가 열립니다.",
-  hint:"차 2대가 선택지마다 따로 갈 수 있어요. 각 차는 그 차에 탄 사람들 표의 다수를 따르고, 동점이면 운전자(다운, 정현)의 선택을 따라요. 2일차는 다운 차에 7명까지 탈 수 있어서 차와 상관없이 원하는 쪽으로 나눠 타고, 누가 어느 차인지 일정 아래에 적혀요. 재창은 자기 차로 원하는 일정만 함께해서 차 계산에는 안 들어가요. 귤색 선은 다운 차, 갈라지는 구간의 파란 선은 정현 차, 빈 핀은 아무 차도 안 가는 곳이에요. 섬 모양은 대략적인 그림이에요.",
+  hint:"차 2대가 선택지마다 따로 갈 수 있어요. 운전자(다운, 정현)는 자기 차에 고정이고 차는 운전자가 고른 곳으로 가요. 나머지는 고른 쪽 차에 타요 (다운 차 5명, 2일차는 7명 / 정현 차 5명). 갈라지면 누가 어느 차인지 일정 아래에 적혀요. 재창은 자기 차(🚙)로 고른 곳에 따로 와요. 귤색 선은 다운 차, 갈라지는 구간의 파란 선은 정현 차, 빈 핀은 아무 차도 안 가는 곳이에요. 섬 모양은 대략적인 그림이에요.",
   foot:"🐷 = 돼지고기 메뉴, 초록 줄 = 돼지고기 못 먹는 사람용 대안. 영업시간과 웨이팅은 출발 전에 한 번 더 확인하세요. 투표 칸은 링크를 아는 누구나 고칠 수 있어요.",
   pork:"돼지고기",altT:"돼지고기 대안",meL:"나는",pick:"고르기",picked:"선택함 ✓",votes:n=>n+"표",
   needMe:"먼저 이름을 눌러주세요",saveFail:"저장이 안 됐어요, 다시 눌러주세요",offline:"투표 서버 연결 안 됨. 일정은 그대로 볼 수 있어요",
@@ -124,7 +124,7 @@ const T={
   cH:"채팅",cP:"아무 이야기나 편하게. 일정에 반영할 제안은 아래 게시판에 적어주세요.",cPh:"메시지 입력",cSend:"보내기",cEmpty:"아직 메시지가 없어요",cFail:"안 보내졌어요, 다시 눌러주세요",cOff:"채팅 서버 준비 중이에요",cSending:"보내는 중",
   day:["1일차","2일차","3일차"],date:["12/2 수","12/3 목","12/4 금"]},
  en:{h1:"Lab trip to Jeju",sub:"Wed Dec 2 to Fri Dec 4, staying at Booyoung Resort in Jungmun. Tap your name, then vote on the stops that have options. Tap a place name or map pin to open it in Naver Map.",
-  hint:"The two cars can split at each choice. Each car follows the majority of its own riders; on a tie, the driver (Daun or Jeonghyeon) decides. On Day 2 Daun's car seats 7, so people regroup by what they picked; who rides where is listed under each stop. Jaechang drives his own car and joins what he likes, so he isn't counted in the two cars. Orange is Daun's car, blue shows where Jeonghyeon's car splits off, hollow pins are places neither car goes. The island outline is approximate.",
+  hint:"The two cars can split at each choice. Drivers (Daun, Jeonghyeon) stay with their car, and each car goes where its driver picked. Everyone else rides in the car going to their pick (Daun's car seats 5, 7 on Day 2; Jeonghyeon's seats 5). Who rides where is listed under split stops. Jaechang comes in his own car (🚙) to what he picks. Orange is Daun's car, blue shows where Jeonghyeon's car splits off, hollow pins are places neither car goes. The island outline is approximate.",
   foot:"🐷 = pork dish; green line = option for the member who can't eat pork. Double-check hours and waits before going. Anyone with the link can change votes.",
   pork:"Pork",altT:"No-pork option",meL:"I am",pick:"Pick",picked:"Picked ✓",votes:n=>n+(n===1?" vote":" votes"),
   needMe:"Tap your name first",saveFail:"Didn't save, please tap again",offline:"Can't reach the vote server. The schedule still works",
@@ -159,11 +159,13 @@ const DAYS=[
 {id:"d2",stops:[
  {t:"08:00",poll:"d2a",q2:["아침 (메뉴는 바뀔 수 있음)","Breakfast (menu may change)"],opts:[
    {n:["제주오성 중문본점","Jeju Oseong Jungmun"],q:"제주오성 중문본점",ll:[33.252,126.413],note:["오전 11시 전 아침 메뉴 1만원. 전복죽, 성게미역국, 뚝배기, 솥밥","₩10,000 breakfast before 11am: abalone porridge, sea urchin soup, stews"]},
-   {n:["아침 안 먹기","Skip breakfast"],note:["숙소에서 쉬다가 학회장으로","Rest, then go to the conference"]}]},
+   {n:["아침 안 먹기","Skip breakfast"],note:["숙소에서 쉬다가 학회장으로","Rest, then go to the conference"]},
+   {n:["호텔 조식 (부영 리조트)","Hotel breakfast (Booyoung Resort)"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428],note:["다운 제안. 숙소 안이라 이동 없음. 가격과 시간은 프런트에서 확인","Daun's pick. In the resort, no driving. Check price and hours at the front desk"]}]},
  {t:"10:00",n:["학회 참석","Conference"],q:"제주국제컨벤션센터",ll:[33.241,126.413]},
- {t:"12:00",poll:"d2l",q2:["점심 (보말칼국수 아니면 고기국수)","Lunch (sea snail noodles or pork noodles)"],opts:[
-   {n:["원조 중문 보말칼국수","Wonjo Jungmun Bomal Kalguksu"],q:"원조 중문 보말칼국수",ll:[33.252,126.419],pork:1,note:["몸국(돼지 육수), 흑돼지수육. 자리 넓음. 월요일만 휴무","Momguk (pork broth), boiled pork. Roomy. Closed Mondays"],w:[["주차 어려움","Tight parking"]],alt:["같은 가게에서 보말칼국수나 보말죽","Sea snail noodles or porridge at the same place"]},
-   {n:["제주한라국수 (중문)","Jeju Halla Guksu (Jungmun)"],q:"제주한라국수 중문",ll:[33.252,126.425],pork:1,note:["다운 추천. 돼지 사골 육수 고기국수에 수육 고명, 아강발(새끼 돼지족발)도 유명. 매일 08:00~20:00 (마지막 주문 19:30), 주차 가능","Daun's pick. Pork-bone broth noodles topped with boiled pork; also known for piglet trotters. Daily 08:00 to 20:00 (last order 19:30), parking available"],w:[["9명 자리 전화 확인 (0507-1361-6392)","Call to check seating for 9 (0507-1361-6392)"]],alt:["돼지 육수가 아닌 메뉴가 있는지 전화로 확인. 없으면 이 시간엔 보말칼국수 쪽이 안전","Call to ask for a non-pork dish; if none, the sea snail noodle place is safer"]}]},
+ {t:"12:00",poll:"d2l",q2:["점심 (몸국 아니면 고기국수)","Lunch (momguk or pork noodles)"],opts:[
+   {gone:1,n:["원조 중문 보말칼국수","Wonjo Jungmun Bomal Kalguksu"],q:"원조 중문 보말칼국수",ll:[33.252,126.419],pork:1,note:["몸국(돼지 육수), 흑돼지수육. 자리 넓음. 월요일만 휴무","Momguk (pork broth), boiled pork. Roomy. Closed Mondays"],w:[["주차 어려움","Tight parking"]],alt:["같은 가게에서 보말칼국수나 보말죽","Sea snail noodles or porridge at the same place"]},
+   {n:["제주한라국수 (중문)","Jeju Halla Guksu (Jungmun)"],q:"제주한라국수 중문",ll:[33.252,126.425],pork:1,note:["다운 추천. 돼지 사골 육수 고기국수에 수육 고명, 아강발(새끼 돼지족발)도 유명. 매일 08:00~20:00 (마지막 주문 19:30), 주차 가능","Daun's pick. Pork-bone broth noodles topped with boiled pork; also known for piglet trotters. Daily 08:00 to 20:00 (last order 19:30), parking available"],w:[["9명 자리 전화 확인 (0507-1361-6392)","Call to check seating for 9 (0507-1361-6392)"]],alt:["돼지 육수가 아닌 메뉴가 있는지 전화로 확인. 없으면 이 시간엔 몰고랑식당 보말국이 안전","Call to ask for a non-pork dish; if none, Molgorang's sea snail soup is safer"]},
+   {n:["몰고랑식당 (서귀포 시내)","Molgorang Sikdang (Seogwipo)"],q:"몰고랑식당 서귀포",ll:[33.250,126.563],pork:1,note:["정현 요청으로 보말칼국수 대신. 몸국 11,000원, 보말국도 있어요. 08:00~20:00, 토요일 휴무(목요일은 영업). 멜국은 메뉴에 있는지 확인 못 했어요","Replaces the sea snail noodle place (Jeonghyeon's call). Momguk ₩11,000, also sea snail soup. 08:00 to 20:00, closed Saturdays (open Thursday). Couldn't confirm anchovy soup"],w:[["멜국 메뉴, 9명 자리 전화 확인","Call to check anchovy soup and seating for 9"]],alt:["같은 가게 보말국","Sea snail soup at the same place"]}]},
  {t:"13:30",poll:"d2d",q2:["귤 따기, 카페, 휴양림 중에서","Tangerine picking, café, or forest"],opts:[
    {n:["귤 따기 체험","Tangerine picking"],href:"https://naver.me/FJbQqnkU",note:["보내준 링크의 농장. 위치는 링크에서 확인","Farm from the shared link"]},
    {n:["나우카페 제주 (중문)","Now Cafe Jeju (Jungmun)"],q:"나우카페 제주 중문",ll:[33.252,126.410],note:["중문 베이커리 카페","Bakery café in Jungmun"]},
@@ -178,7 +180,8 @@ const DAYS=[
 {id:"d3",stops:[
  {t:"08:30",poll:"d3a",q2:["아침 (메뉴는 바뀔 수 있음)","Breakfast (menu may change)"],opts:[
    {n:["고집돌우럭 중문점","Gojip Dol Ureok Jungmun"],q:"고집돌우럭 중문점",ll:[33.255,126.421],note:["아침 8시부터 한식 아침. 전복죽, 옥돔구이. 점심엔 매우 붐빔","Korean breakfast from 8am. Very busy at lunch"]},
-   {n:["아침 안 먹기","Skip breakfast"],note:["체크아웃 준비하면서 숙소에서","Pack up before checkout"]}]},
+   {n:["아침 안 먹기","Skip breakfast"],note:["체크아웃 준비하면서 숙소에서","Pack up before checkout"]},
+   {n:["호텔 조식 (부영 리조트)","Hotel breakfast (Booyoung Resort)"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428],note:["다운 제안. 숙소 안이라 이동 없음. 가격과 시간은 프런트에서 확인","Daun's pick. In the resort, no driving. Check price and hours at the front desk"]}]},
  {t:"10:30",n:["체크아웃","Check out"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428]},
  {t:"10:50",n:["카멜리아힐 (동백)","Camellia Hill"],q:"카멜리아힐",ll:[33.290,126.369],note:["12월이 동백철","December is camellia season"]},
  {t:"12:30",poll:"d3d",q2:["점심 (흑돼지 아니면 해산물)","Lunch (black pork or seafood)"],opts:[
@@ -216,8 +219,11 @@ const PICKS={};MEMBERS.forEach(m=>PICKS[m[0]]={});
 const oid=i=>String.fromCharCode(97+i);
 const VALID={};DAYS.forEach(d=>d.stops.forEach(s=>{if(s.poll)VALID[s.poll]=s.opts.map((o,i)=>oid(i))}));
 const clean=p=>{const o={};if(p&&typeof p==="object")for(const k in VALID)if(VALID[k].includes(p[k]))o[k]=p[k];return o};
-const voters=(s,i)=>MEMBERS.filter(m=>PICKS[m[0]][s.poll]===oid(i));
-const lead=s=>{let b=0,bn=-1;s.opts.forEach((o,i)=>{const n=voters(s,i).length;if(n>bn){b=i;bn=n}});return b};
+// gone:1 = 뺀 선택지. 표 순서(a, b, …)가 바뀌지 않게 자리는 남기고 화면, 계산에서만 뺀다. 그 선택지에 넣은 표는 무효
+const live=s=>s.opts.flatMap((o,i)=>o.gone?[]:[i]);
+const voters=(s,i)=>s.opts[i].gone?[]:MEMBERS.filter(m=>PICKS[m[0]][s.poll]===oid(i));
+const lead=s=>{let b=live(s)[0],bn=-1;live(s).forEach(i=>{const n=voters(s,i).length;if(n>bn){b=i;bn=n}});return b};
+const drv=(s,k)=>{const v=PICKS[k][s.poll],i=v?v.charCodeAt(0)-97:-1;return i>=0&&s.opts[i]&&!s.opts[i].gone?i:-1};
 const mname=m=>lang==="ko"?m[1]:m[2];
 // 차 2대. 선택지가 있는 일정은 차마다 따로 정한다:
 // 그 차 사람들 표의 다수 > 동점이면 운전자 표 > 그래도 못 정하면 전체 1등
@@ -225,18 +231,19 @@ const CARS=[{d:"daun",m:["daun","prof","sh","camila","sy"],c:"#e8700c",n:["다�
             {d:"jh",m:["jh","jw","yw","jiu"],c:"#2b8fd6",n:["정현 차","Jeonghyeon's car"]}];
 const RIDERS=CARS.flatMap(c=>c.m); // 재창(jc)은 자기 차로 원하는 일정만 따라와서 두 차 계산에서 뺀다
 const AWAY={d1h:["sy"]}; // 서연은 17:10 합류라 1일차 16:50 일정엔 없음
-// 2일차는 다운 차에 7명까지 타서 차 구분 없이 원하는 쪽으로 나눠 탄다 (정현 차는 5명으로 계산)
-// 네 가지 배치(같이 a, 같이 b, 갈라지기 둘)를 다 해보고 원하는 곳에 가는 사람이 가장 많은 배치를 고른다
-// 동점이면 운전자 뜻 > 같이 다니기 > 전체 1등 순
-const FLEX=p=>p.startsWith("d2"),SEATS=[7,5];
+// 차 규칙 (정현 결정, 2026-11-26): 운전자는 자기 차에 고정이고 차는 운전자가 고른 곳으로 간다.
+// 탑승자는 날마다 표에 따라 차를 바꿔 탄다. 좌석: 다운 차 5명(2일차는 7명), 정현 차 5명
+// 운전자가 투표 안 했으면 그 차는 원하는 곳에 가는 사람이 가장 많아지는 쪽으로. 동점이면 같이 다니기 > 전체 1등
+const SEATS=p=>p.startsWith("d2")?[7,5]:[5,5];
 function flexPlan(s){
   const want=k=>{const v=PICKS[k][s.poll];return v?v.charCodeAt(0)-97:-1},g=lead(s);let best=null;
-  const idx=s.opts.map((x,i)=>i);
+  const idx=live(s),dD=drv(s,"daun"),dJ=drv(s,"jh"),seats=SEATS(s.poll),away=AWAY[s.poll]||[];
   for(const oD of idx)for(const oJ of idx){
+    if((dD>=0&&oD!==dD)||(dJ>=0&&oJ!==dJ))continue;
     const R=[["daun"],["jh"]],free=[],o=[oD,oJ];
-    RIDERS.forEach(k=>{if(k==="daun"||k==="jh")return;const w=want(k);if(oD!==oJ&&w===oD)R[0].push(k);else if(oD!==oJ&&w===oJ)R[1].push(k);else free.push(k)});
-    R.forEach((r,ci)=>{while(r.length>SEATS[ci])free.push(r.pop())});
-    free.forEach(k=>{const home=CARS[0].m.includes(k)?0:1,ci=R[home].length<SEATS[home]?home:1-home;R[ci].push(k)});
+    RIDERS.forEach(k=>{if(k==="daun"||k==="jh"||away.includes(k))return;const w=s.opts[want(k)]&&!s.opts[want(k)].gone?want(k):-1;if(oD!==oJ&&w===oD)R[0].push(k);else if(oD!==oJ&&w===oJ)R[1].push(k);else free.push(k)});
+    R.forEach((r,ci)=>{while(r.length>seats[ci])free.push(r.pop())});
+    free.forEach(k=>{const home=CARS[0].m.includes(k)?0:1,ci=R[home].length<seats[home]?home:1-home;R[ci].push(k)});
     const opt=k=>R[0].includes(k)?oD:oJ;
     const sc=[RIDERS.filter(k=>want(k)>=0&&want(k)===opt(k)).length,(want("daun")===oD)+(want("jh")===oJ),+(oD===oJ),+(oD===g)];
     const i=best?sc.findIndex((v,j)=>v!==best.sc[j]):0;
@@ -244,21 +251,14 @@ function flexPlan(s){
   }
   return best;
 }
-const riders=s=>{if(!FLEX(s.poll))return"";const p=flexPlan(s);if(p.ch[0]===p.ch[1])return"";
+const riders=s=>{const p=flexPlan(s);if(p.ch[0]===p.ch[1])return"";
   const nm=k=>mname(MEMBERS.find(m=>m[0]===k));
   return `<div class="who">${CARS.map((c,ci)=>`<b style="color:${c.c}">🚗 ${L(c.n)} (${s.opts[p.ch[ci]]._n})</b> ${p.R[ci].map(nm).join(", ")}`).join("<br>")}</div>`};
 function carPick(s,car){
-  if(FLEX(s.poll))return flexPlan(s).ch[CARS.indexOf(car)];
-  const ms=car.m.filter(k=>!(AWAY[s.poll]||[]).includes(k));
-  const cnt=s.opts.map((o,i)=>ms.filter(k=>PICKS[k][s.poll]===oid(i)).length);
-  const top=Math.max(...cnt),g=lead(s);
-  if(!top)return g;
-  const best=cnt.flatMap((n,i)=>n===top?[i]:[]);
-  if(best.length===1)return best[0];
-  const dv=PICKS[car.d][s.poll],di=dv?dv.charCodeAt(0)-97:-1;
-  return best.includes(di)?di:best.includes(g)?g:best[0];
+  return flexPlan(s).ch[CARS.indexOf(car)];
 }
-const carTags=(s,i)=>CARS.filter(c=>carPick(s,c)===i).map(c=>`<span class="car" style="background:${c.c}">🚗 ${L(c.n)}</span>`).join("");
+const carTags=(s,i)=>CARS.filter(c=>carPick(s,c)===i).map(c=>`<span class="car" style="background:${c.c}">🚗 ${L(c.n)}</span>`).join("")
+  +(PICKS.jc&&PICKS.jc[s.poll]===oid(i)?`<span class="car" style="background:#1c7a4f">🚙 ${lang==="ko"?"재창 차":"Jaechang's car"}</span>`:"");
 let net="loading",syncedAt=null,msg="",pending=0,ver=0;
 
 function numberDay(d){let n=0;d.stops.forEach(s=>{if(s.opts){n++;s._n=n;s.opts.forEach((o,i)=>o._n=n+String.fromCharCode(97+i))}else if(s.ll){n++;s._n=n}else s._n=null})}
@@ -266,7 +266,7 @@ function drawMap(){
   const d=DAYS.find(x=>x.id===day);numberDay(d);
   const isl=COAST.map(P).map(p=>p.join(",")).join(" ");const routes=CARS.map(()=>[]),pins=[];
   d.stops.forEach(s=>{
-    if(s.opts){const ch=CARS.map(c=>carPick(s,c));ch.forEach((i,ci)=>{if(s.opts[i].ll)routes[ci].push(s.opts[i].ll)});s.opts.forEach((o,i)=>{if(o.ll)pins.push({ll:o.ll,lab:o._n,q:o.q,name:L(o.n),main:ch.includes(i)})})}
+    if(s.opts){const ch=CARS.map(c=>carPick(s,c));ch.forEach((i,ci)=>{if(s.opts[i].ll)routes[ci].push(s.opts[i].ll)});s.opts.forEach((o,i)=>{if(o.ll&&!o.gone)pins.push({ll:o.ll,lab:o._n,q:o.q,name:L(o.n),main:ch.includes(i)})})}
     else if(s.ll){routes.forEach(r=>r.push(s.ll));pins.push({ll:s.ll,lab:String(s._n),q:s.q,name:L(s.n),main:true})}
   });
   // 두 차 동선이 같으면 귤색 선 하나, 갈라지면 파란 선(정현 차)을 아래에 깔고 귤색(다운 차)을 위에
@@ -295,7 +295,7 @@ function drawList(){
   $("list").innerHTML=d.stops.map(s=>{
     if(!s.opts)return `<li class="stop"><div class="time">${s.t}</div><div><div class="name">${s._n?`<span class="num">${s._n}</span>`:""}${link(s)}${porkTag(s)}</div>${extra(s)}</div></li>`;
     const ch=CARS.map(c=>carPick(s,c));
-    return `<li class="stop"><div class="time">${s.t}</div><div><div class="q">${L(s.q2)}</div><div class="opts">${s.opts.map((o,i)=>{
+    return `<li class="stop"><div class="time">${s.t}</div><div><div class="q">${L(s.q2)}</div><div class="opts">${s.opts.map((o,i)=>{if(o.gone)return"";
       const vs=voters(s,i),mine=!!me&&PICKS[me][s.poll]===oid(i);
       const on=ch.includes(i);
       return `<div class="opt${on?" lead":""}"><div class="ohead"><div class="name"><span class="num${on?"":" o"}">${o._n}</span>${link(o)}${porkTag(o)}${carTags(s,i)}</div><span class="cnt">${t("votes")(vs.length)}</span><button class="vote" data-v="${s.poll}:${oid(i)}" aria-pressed="${mine}">${mine?t("picked"):t("pick")}</button></div>${extra(o)}${vs.length?`<div class="who">${vs.map(m=>`<span>${mname(m)}</span>`).join("")}</div>`:""}</div>`}).join("")}</div>${riders(s)}</div></li>`;
@@ -326,8 +326,11 @@ const REPLIES={
  "1795659400212":"",
  "1795660024591":["방금 고쳤어요. 엔터 치면 내 메시지가 바로 뜨고, 채팅 중엔 2초마다 새로 읽어요. 안 바뀌어 보이면 새로고침 한 번 해주세요","Just fixed: your message shows right after Enter, and chat refreshes every 2 s. Refresh once if it still looks old"],
  "1795660026998":["2일차 15:30 투표에 「제주 중문카트」를 세 번째 선택지로 넣었어요","Added Jungmun Go-Kart as a third option to the Day 2 15:30 vote"],
- "1795661346537":["좋은 지적이에요. 1일차, 3일차도 2일차처럼 원하는 쪽으로 나눠 타는 안을 정현에게 올렸어요. 정현이 정하면 바로 바꿀게요","Good point. Proposed to Jeonghyeon that Days 1 and 3 also regroup by vote like Day 2; will switch as soon as he decides"],
- "1795661209761":["지금은 정현이 정한 규칙(차 안 다수결, 운전자는 동점일 때만)대로예요. 1일차 16:50은 다운은 a지만 같은 차 수현, 카밀라가 b라서 다운 차가 b예요. 규칙을 바꿀지는 정현이 확인하고 정할게요","It follows Jeonghyeon's rule now (majority in the car, driver breaks ties): Day 1 16:50 Daun picked a but Suhyeon and Camila picked b. Jeonghyeon will decide whether to change it"],
+ "1795661346537":["바꿨어요. 이제 모든 날 운전자는 자기 차에 고정, 차는 운전자가 고른 곳으로 가고, 나머지는 고른 쪽 차에 타요","Done: on every day the driver stays with their car, the car goes where the driver picked, and everyone else rides to their own pick"],
+ "1795661209761":["바꿨어요. 차는 운전자가 고른 곳으로 가요 (정현 결정)","Done: each car now goes where its driver picked (Jeonghyeon's call)"],
+ "1795661382147":["보말칼국수는 빼고 몸국, 보말국 파는 몰고랑식당(서귀포 시내)을 넣었어요. 멜국까지 파는 집은 못 찾아서 메뉴는 전화로 확인해야 해요. 아침 포함 모든 일정에서 차는 운전자 선택을 따라요","Removed the sea snail noodle place and added Molgorang (momguk, sea snail soup) in Seogwipo; couldn't confirm anchovy soup. Every stop, breakfast included, now follows the driver's pick"],
+ "1795661425949":["재창이가 고른 선택지에 「🚙 재창 차」 태그가 붙어요","Jaechang's pick now shows a \"🚙 Jaechang's car\" tag"],
+ "1795661477271":["목, 금 아침 투표에 「호텔 조식 (부영 리조트)」을 넣었어요","Added \"Hotel breakfast (Booyoung Resort)\" to the Thursday and Friday breakfast votes"],
  "1795660928314":["2일차 13:30 투표에 서귀포자연휴양림을 세 번째 선택지로 넣었어요","Added Seogwipo Natural Recreation Forest as a third option at Day 2 13:30"],
  "1795660825298":["맞아요. 서연 공항 내려주기는 3일차 19:00 고정 일정으로 따로 빼고, 투표는 「도두 카페 아니면 동문시장」만 남겼어요","Right: the Seoyeon airport drop-off is now its own fixed stop at Day 3 19:00, and the vote is just Dodu café or Dongmun Market"],
  "1795660191595":["3일차 16:00을 「한담 산책 아니면 9.81파크」 투표로 바꿨어요. 애월 동선 안쪽이라 잘 맞아요","Day 3 16:00 is now \"Handam walk or 9.81 Park\"; it sits right on the Aewol route"],
@@ -341,7 +344,7 @@ const REPLIES={
  "1795659146546":["채팅 만들었어요. 일정 아래 「채팅」에서 바로 이야기하세요","Chat is added; use the Chat box below the schedule"],
  "1795658570702":["3일차 19:00을 투표로 바꾸고 제주 동문시장 야시장을 넣었어요 (보통 18:00~24:00)","Day 3 19:00 is now a vote with Jeju Dongmun Market night market (usually 18:00 to 24:00)"]
 };
-const OPEN=["1795661209761","1795661346537"]; // 정현 판단을 기다리는 글의 at (문자열). 정하면 빼고 REPLIES 답을 바꾼다
+const OPEN=[]; // 정현 판단을 기다리는 글의 at (문자열). 정하면 빼고 REPLIES 답을 바꾼다
 let archOpen=false;document.addEventListener("toggle",e=>{if(e.target.id==="arch")archOpen=e.target.open},true);
 let POSTS=[],BOARD=false; // BOARD: 서버가 게시판을 아는 새 버전인지 (옛 서버에 글을 보내면 투표가 지워짐)
 function setPosts(ps){
