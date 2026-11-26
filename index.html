@@ -63,6 +63,18 @@ ol.list{list-style:none;margin:0;padding:0}
 .status.bad{color:light-dark(#9b2318,#ffb4a8);font-weight:600}
 .car{display:inline-block;font-size:13px;font-weight:600;color:#fff;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:2px;white-space:nowrap}
 .cnt{font-size:14px;color:var(--mute);margin-left:auto;margin-right:8px}
+.board{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.board h2{font:400 22px/1.2 "Black Han Sans",sans-serif;margin:0 0 4px}
+.brow{display:flex;gap:8px;margin:10px 0 8px}
+.board select,.board textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.board select{flex:1;min-height:44px}.board textarea{width:100%;resize:vertical;display:block}
+.board textarea:focus,.board select:focus{outline:3px solid var(--tang);outline-offset:1px}
+.send{border:0;background:var(--tang);color:#fff;border-radius:10px;padding:8px 18px;font:600 15px "IBM Plex Sans KR",sans-serif;min-height:44px;cursor:pointer}
+.send:disabled{opacity:.5}
+.board .status{margin:6px 0 0}
+.posts{list-style:none;margin:8px 0 0;padding:0}.posts li{padding:12px 0;border-top:1px solid var(--line)}
+.phead{display:flex;align-items:center;flex-wrap:wrap;gap:2px}.pat{margin-left:auto;font-size:13px;color:var(--mute)}
+.ptext{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:2px}
 .foot{margin-top:28px;font-size:13px;color:var(--mute)}
 @media(max-width:600px){.stop{grid-template-columns:3.9em minmax(0,1fr)}.time{font-size:18px}}
 @media(prefers-reduced-motion:no-preference){.route{stroke-dasharray:6 7;animation:dash 20s linear infinite}@keyframes dash{to{stroke-dashoffset:-260}}}
@@ -80,6 +92,7 @@ ol.list{list-style:none;margin:0;padding:0}
   <div class="fig"><svg id="map" viewBox="0 0 800 455" role="img" aria-label="map"></svg></div>
   <p class="hint" id="hint"></p>
   <ol class="list" id="list"></ol>
+  <section class="board" id="board"></section>
   <p class="foot" id="foot"></p>
 </div>
 
@@ -92,6 +105,9 @@ const T={
   pork:"돼지고기",altT:"돼지고기 대안",meL:"나는",pick:"고르기",picked:"선택함 ✓",votes:n=>n+"표",
   needMe:"먼저 이름을 눌러주세요",saveFail:"저장이 안 됐어요, 다시 눌러주세요",offline:"투표 서버 연결 안 됨. 일정은 그대로 볼 수 있어요",
   loading:"투표 불러오는 중",saving:"저장 중",synced:s=>s+" 기준 투표 현황, 20초마다 새로 읽어요",
+  bH:"제안 게시판",bP:"바꾸고 싶은 일정, 가고 싶은 곳, 추가하고 싶은 것을 적어주세요. 정현이 보고 반영하면 답을 달아요.",
+  bDay:"관련 날짜",bAll:"전체 일정",bPh:"예: 2일차 오후에 쇠소깍도 가고 싶어요",bSend:"올리기",bEmpty:"아직 글이 없어요",
+  bFail:"글이 안 올라갔어요, 다시 눌러주세요",bSent:"올렸어요 ✓",bReply:"답",
   day:["1일차","2일차","3일차"],date:["12/2 수","12/3 목","12/4 금"]},
  en:{h1:"Lab trip to Jeju",sub:"Wed Dec 2 to Fri Dec 4, staying at Booyoung Resort in Jungmun. Tap your name, then vote on the stops that have options. Tap a place name or map pin to open it in Naver Map.",
   hint:"The two cars can split at each choice. Each car follows the majority of its own riders; on a tie, the driver (Daun or Jeonghyeon) decides. On Day 2 Daun's car seats 7, so people regroup by what they picked; who rides where is listed under each stop. Orange is Daun's car, blue shows where Jeonghyeon's car splits off, hollow pins are places neither car goes. The island outline is approximate.",
@@ -99,6 +115,9 @@ const T={
   pork:"Pork",altT:"No-pork option",meL:"I am",pick:"Pick",picked:"Picked ✓",votes:n=>n+(n===1?" vote":" votes"),
   needMe:"Tap your name first",saveFail:"Didn't save, please tap again",offline:"Can't reach the vote server. The schedule still works",
   loading:"Loading votes",saving:"Saving",synced:s=>"Votes as of "+s+", refreshed every 20 s",
+  bH:"Suggestion board",bP:"Want to change a stop, go somewhere, or add something? Write it here. Jeonghyeon will reply once it's reflected.",
+  bDay:"Related day",bAll:"Whole trip",bPh:"e.g. I'd also like to see Soesokkak on Day 2 afternoon",bSend:"Post",bEmpty:"No posts yet",
+  bFail:"Didn't post, please try again",bSent:"Posted ✓",bReply:"Reply",
   day:["Day 1","Day 2","Day 3"],date:["Wed 12/2","Thu 12/3","Fri 12/4"]}};
 
 const MEMBERS=[["prof","교수님","Professor"],["daun","다운","Daun"],["jh","정현","Jeonghyeon"],["sh","수현","Suhyeon"],["camila","카밀라","Camila"],["sy","서연","Seoyeon"],["jw","지원","Jiwon"],["yw","예원","Yewon"],["jiu","지우","Jiwoo"]];
@@ -263,9 +282,43 @@ function drawStatus(){
   $("status").textContent=k?t(k):t("synced")(syncedAt.toLocaleTimeString(lang==="ko"?"ko-KR":"en-US",{hour:"2-digit",minute:"2-digit"}));
   $("status").className="status"+(["needMe","saveFail","offline"].includes(k)?" bad":"");
 }
+// 게시판: 글은 사람이 쓴 자유 글이라 화면에 넣을 때 반드시 esc
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+let POSTS=[],BOARD=false; // BOARD: 서버가 게시판을 아는 새 버전인지 (옛 서버에 글을 보내면 투표가 지워짐)
+function setPosts(ps){
+  BOARD=Array.isArray(ps);
+  if(!BOARD)return;
+  const next=ps.filter(p=>p&&MEMBERS.some(m=>m[0]===p.who)&&typeof p.text==="string")
+    .map(p=>({at:+p.at||0,who:p.who,day:["d1","d2","d3"].includes(p.day)?p.day:"",text:p.text.slice(0,500),reply:typeof p.reply==="string"?p.reply.slice(0,500):""}))
+    .sort((a,b)=>b.at-a.at);
+  if(JSON.stringify(next)!==JSON.stringify(POSTS)){POSTS=next;drawPosts()}
+}
+function drawBoard(){
+  const keep=$("btext")?$("btext").value:"",kd=$("bday")?$("bday").value:"";
+  $("board").innerHTML=`<h2>${t("bH")}</h2><p class="note">${t("bP")}</p>
+   <form id="bform"><div class="brow"><select id="bday" aria-label="${t("bDay")}"><option value="">${t("bAll")}</option>${DAYS.map((d,i)=>`<option value="${d.id}">${t("day")[i]}</option>`).join("")}</select>
+   <button class="send" id="bsend">${t("bSend")}</button></div>
+   <textarea id="btext" maxlength="500" rows="3" placeholder="${t("bPh")}" aria-label="${t("bH")}"></textarea><p class="status" id="bmsg" role="status"></p></form><ul class="posts" id="posts"></ul>`;
+  $("btext").value=keep;$("bday").value=kd;drawPosts();
+}
+function drawPosts(){
+  const el=$("posts");if(!el)return;
+  const nm=k=>mname(MEMBERS.find(m=>m[0]===k)),when=at=>at?new Date(at).toLocaleString(lang==="ko"?"ko-KR":"en-US",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+  el.innerHTML=POSTS.length?POSTS.map(p=>`<li><div class="phead"><b>${esc(nm(p.who))}</b>${p.day?`<span class="tag">${t("day")[+p.day[1]-1]}</span>`:""}<span class="pat">${when(p.at)}</span></div><div class="ptext">${esc(p.text)}</div>${p.reply?`<div class="alt"><b>${t("bReply")}</b> ${esc(p.reply)}</div>`:""}</li>`).join(""):`<li class="note">${t("bEmpty")}</li>`;
+}
+async function post(){
+  const m=$("bmsg"),text=$("btext").value.trim();
+  if(!me){m.textContent=t("needMe");m.className="status bad";$("me").scrollIntoView({block:"center"});return}
+  if(!text)return;
+  $("bsend").disabled=true;let ok=false;
+  if(API&&BOARD)try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"post",who:me,day:$("bday").value,text})});const j=await r.json();ok=!!(j&&j.ok)}catch(e){}
+  $("bsend").disabled=false;
+  if(ok){$("btext").value="";m.textContent=t("bSent");m.className="status";load()}else{m.textContent=t("bFail");m.className="status bad"}
+}
+document.addEventListener("submit",e=>{if(e.target.id==="bform"){e.preventDefault();post()}});
 async function load(){
   const v=ver;let all=null;
-  if(API)try{const r=await fetch(API,{cache:"no-store"});const j=await r.json();if(j&&j.ok&&j.picks&&typeof j.picks==="object")all=j.picks}catch(e){}
+  if(API)try{const r=await fetch(API,{cache:"no-store"});const j=await r.json();if(j&&j.ok&&j.picks&&typeof j.picks==="object"){all=j.picks;setPosts(j.posts)}}catch(e){}
   if(!all){net="off";drawStatus();return}
   const before=JSON.stringify(PICKS);
   MEMBERS.forEach(([k])=>{if(k!==me||(!pending&&v===ver))PICKS[k]=clean(all[k])});
@@ -292,7 +345,7 @@ function drawChrome(){
   document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===lang));
   $("tabs").innerHTML=DAYS.map((d,i)=>`<button class="tab" role="tab" aria-selected="${d.id===day}" data-d="${d.id}">${t("day")[i]}<small>${t("date")[i]}</small></button>`).join("");
 }
-function render(){drawChrome();drawMe();drawStatus();drawMap();drawList()}
+function render(){drawChrome();drawMe();drawStatus();drawMap();drawList();drawBoard()}
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-l],[data-d],[data-m],[data-v]");if(!b)return;
   if(b.dataset.l){lang=b.dataset.l;try{localStorage.setItem("jeju-lang",lang)}catch(x){}render();return}
