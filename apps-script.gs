@@ -10,6 +10,9 @@ const DAYS = ["", "d1", "d2", "d3"];
 function ss_() { return SpreadsheetApp.getActiveSpreadsheet(); }
 function sheet_() { return ss_().getSheets()[0]; }
 function board_() { return ss_().getSheetByName("게시판") || ss_().insertSheet("게시판", ss_().getNumSheets()); }
+// 「채팅」 시트: 한 줄 = 메시지 하나. A 시각, B 멤버 키, C 내용. 페이지에는 마지막 200개만 보낸다
+function chat_() { return ss_().getSheetByName("채팅") || ss_().insertSheet("채팅", ss_().getNumSheets()); }
+const safe_ = t => /^[=+\-@]/.test(t) ? "'" + t : t;
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
 function doGet() {
@@ -20,7 +23,12 @@ function doGet() {
   const posts = board_().getDataRange().getValues()
     .filter(r => KEYS.indexOf(r[1]) >= 0 && r[3])
     .map(r => ({ at: r[0] instanceof Date ? r[0].getTime() : 0, who: r[1], day: String(r[2] || ""), text: String(r[3]), reply: String(r[4] || "") }));
-  return json_({ ok: true, picks: out, posts: posts });
+  // 채팅은 시각 키를 t로 (게시판 글의 at과 섞이지 않게)
+  const chat = chat_().getDataRange().getValues()
+    .filter(r => KEYS.indexOf(r[1]) >= 0 && r[2])
+    .slice(-200)
+    .map(r => ({ t: r[0] instanceof Date ? r[0].getTime() : 0, who: r[1], text: String(r[2]) }));
+  return json_({ ok: true, picks: out, posts: posts, chat: chat });
 }
 
 function doPost(e) {
@@ -34,6 +42,12 @@ function doPost(e) {
       if (!text) return json_({ ok: false });
       // =, +, -, @로 시작하면 시트가 수식으로 읽지 않게 앞에 ' 를 붙인다
       board_().appendRow([new Date(), b.who, DAYS.indexOf(b.day) >= 0 ? b.day : "", /^[=+\-@]/.test(text) ? "'" + text : text, ""]);
+      return json_({ ok: true });
+    }
+    if (b.type === "chat") {
+      const text = String(b.text || "").trim().slice(0, 300);
+      if (!text) return json_({ ok: false });
+      chat_().appendRow([new Date(), b.who, safe_(text)]);
       return json_({ ok: true });
     }
     const p = {};
