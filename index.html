@@ -343,6 +343,7 @@ const REPLIES={
  "1795660026998":["2일차 15:30 투표에 「제주 중문카트」를 세 번째 선택지로 넣었어요","Added Jungmun Go-Kart as a third option to the Day 2 15:30 vote"],
  "1795661346537":["바꿨어요. 이제 모든 날 운전자는 자기 차에 고정, 차는 운전자가 고른 곳으로 가고, 나머지는 고른 쪽 차에 타요","Done: on every day the driver stays with their car, the car goes where the driver picked, and everyone else rides to their own pick"],
  "1795661209761":["바꿨어요. 차는 운전자가 고른 곳으로 가요 (정현 결정)","Done: each car now goes where its driver picked (Jeonghyeon's call)"],
+ "1795667800061":["후보 찾았어요: 착한집 제주공항본점 (공항 3~5분, 고등어조림, 옥돔구이, 갈치조림, 단체석, 금요일 영업). 정현이 정하면 바로 바꿀게요","Candidate: Chakhanjip near the airport (3 to 5 min; braised mackerel, grilled tilefish, hairtail; group seating; open Fridays). Will swap once Jeonghyeon decides"],
  "1795667429404":["맞아요, 동도원은 중문 대포동(이어도로 189)이에요. 위치와 설명을 고치고 「공항까지 빠듯」 태그를 달았어요. 공항 근처 생선 백반집으로 바꿀지는 정현이 정할게요","You were right: Dongdowon is in Daepo, Jungmun. Fixed the location and added a \"tight to the airport\" tag. Jeonghyeon will decide whether to swap in a fish set meal place near the airport"],
  "1795665845673":["휴양림 선택지의 그 태그를 뺐어요","Removed that tag from the forest option"],
  "1795665799000":["일정 아래 탑승자 명단(🚗 다운 차 (5b) 다운, 수현…)을 모두 뺐어요. 선택지의 차 태그와 지도 선은 그대로예요","Removed all rider lists under the stops; the car tags and map lines stay"],
@@ -364,7 +365,7 @@ const REPLIES={
  "1795659146546":["채팅 만들었어요. 일정 아래 「채팅」에서 바로 이야기하세요","Chat is added; use the Chat box below the schedule"],
  "1795658570702":["3일차 19:00을 투표로 바꾸고 제주 동문시장 야시장을 넣었어요 (보통 18:00~24:00)","Day 3 19:00 is now a vote with Jeju Dongmun Market night market (usually 18:00 to 24:00)"]
 };
-const OPEN=["1795667429404"]; // 정현 판단을 기다리는 글의 at (문자열). 정하면 빼고 REPLIES 답을 바꾼다
+const OPEN=["1795667429404","1795667800061"]; // 정현 판단을 기다리는 글의 at (문자열). 정하면 빼고 REPLIES 답을 바꾼다
 let archOpen=false;document.addEventListener("toggle",e=>{if(e.target.id==="arch")archOpen=e.target.open},true);
 let POSTS=[],BOARD=false; // BOARD: 서버가 게시판을 아는 새 버전인지 (옛 서버에 글을 보내면 투표가 지워짐)
 function setPosts(ps){
