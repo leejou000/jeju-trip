@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>투표 저장소 만들기</title>
+<style>
+body{font:16px/1.6 system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px}
+button{font:600 16px system-ui;padding:10px 18px;border-radius:10px;border:0;background:#e8700c;color:#fff;cursor:pointer}
+textarea{width:100%;height:150px;font:13px monospace;margin-top:12px}
+#log{white-space:pre-wrap;font-size:14px;color:#555}
+</style>
+</head>
+<body>
+<h1>투표 저장소 만들기 (한 번만)</h1>
+<p>버튼을 누르면 jsonblob.com에 사람별 저장 칸 9개를 만들고, 첫 칸으로 읽기와 쓰기를 시험합니다. 끝나면 아래 상자의 한 줄을 통째로 복사해서 Claude에게 보내주세요.</p>
+<button id="go">9개 만들기</button>
+<div id="log"></div>
+<textarea id="out" readonly></textarea>
+<script>
+const KEYS=["prof","daun","jh","sh","camila","sy","jw","yw","jiu"];
+const API="https://jsonblob.com/api/jsonBlob";
+const log=s=>document.getElementById("log").textContent+=s+"\n";
+document.getElementById("go").onclick=async e=>{
+  e.target.disabled=true;const ids={};
+  try{
+    for(const k of KEYS){
+      const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:'{"picks":{}}'});
+      const loc=r.headers.get("Location")||r.headers.get("X-jsonblob-id")||r.headers.get("x-jsonblob")||"";
+      const id=loc.split("/").pop();
+      if(!r.ok||!id)throw new Error(k+": 만들기 실패 (상태 "+r.status+", ID 헤더 "+(loc||"없음")+")");
+      ids[k]=id;log(k+" 만듦: "+id);
+    }
+    const u=API+"/"+ids.prof;
+    let r=await fetch(u,{method:"PUT",headers:{"Content-Type":"application/json",Accept:"application/json"},body:'{"picks":{"d1h":"a"}}'});
+    if(!r.ok)throw new Error("쓰기 시험 실패 (상태 "+r.status+")");
+    r=await fetch(u,{headers:{Accept:"application/json"},cache:"no-store"});const j=await r.json();
+    if(j.picks.d1h!=="a")throw new Error("읽기 시험 실패");
+    await fetch(u,{method:"PUT",headers:{"Content-Type":"application/json",Accept:"application/json"},body:'{"picks":{}}'});
+    log("읽기, 쓰기 시험 통과 ✓");
+    document.getElementById("out").value="const BLOBS="+JSON.stringify(ids)+";";
+  }catch(x){log("오류: "+x.message+"\n이 화면을 캡처해서 Claude에게 보내주세요.");document.getElementById("out").value=JSON.stringify(ids)}
+};
+</script>
+</body>
+</html>

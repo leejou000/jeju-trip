@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>연구실 제주 여행</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 친구끼리 돌려보는 여행 일정표, 가볍고 또렷하게
+   IDEA: 제주 현무암 위에 귤색 핀을 꽂은 손지도
+   PICTURE: 날짜별 동선이 번호 핀으로 이어지는 섬 지도
+   COLOUR and TYPE: 바다 하늘색, 현무암 회색 섬, 귤색 동선 / Black Han Sans + IBM Plex Sans KR
+   LAYOUT: 언어와 이름 선택, 날짜 탭, 지도, 시간이 크게 걸린 일정 목록 */
+:root{color-scheme:light dark;
+--bg:light-dark(#f4f7f8,#0e1a22);--ink:light-dark(#14212a,#e8eef1);--mute:light-dark(#5b6b75,#9aabb5);
+--sea:light-dark(#cfe3ec,#13303f);--land:light-dark(#3b4043,#2b3136);--land2:light-dark(#555b5f,#3d454b);
+--tang:#e8700c;--tang2:light-dark(#fff1e4,#3a2412);--card:light-dark(#fff,#15252f);--line:light-dark(#dde5e9,#24394a);--green:light-dark(#1c7a4f,#5fd39a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:1000px;margin:0 auto;padding:clamp(20px,4vw,40px) max(4vw,16px) 60px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+h1{font:400 clamp(32px,6vw,48px)/1.05 "Black Han Sans",sans-serif;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--mute);margin:0 0 18px;max-width:62ch}
+.lang{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;flex:none}
+.lang button{border:0;background:var(--card);color:var(--ink);font:600 15px "IBM Plex Sans KR",sans-serif;padding:8px 14px;min-height:44px;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.me{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--tang2);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.me b{margin-right:4px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-size:15px;min-height:44px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--tang);border-color:var(--tang);color:#fff;font-weight:600}
+button:focus-visible,a:focus-visible{outline:3px solid var(--tang);outline-offset:2px}
+.status{font-size:13px;color:var(--mute);margin:0 0 14px}
+.tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto}
+.tab{flex:1 0 auto;border:0;border-radius:12px;padding:10px 16px;font:600 16px "IBM Plex Sans KR",sans-serif;background:var(--card);color:var(--ink);min-height:48px;cursor:pointer;box-shadow:0 1px 0 var(--line)}
+.tab[aria-selected=true]{background:var(--ink);color:var(--bg)}
+.tab small{display:block;font-weight:400;font-size:13px;opacity:.75}
+.fig{position:relative;background:var(--sea);border-radius:18px;overflow:hidden;aspect-ratio:800/455}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.hint{font-size:13px;color:var(--mute);margin:6px 2px 18px}
+ol.list{list-style:none;margin:0;padding:0}
+.stop{display:grid;grid-template-columns:4.6em minmax(0,1fr);gap:4px 14px;padding:14px 0;border-top:1px solid var(--line)}
+.time{font:400 22px/1.2 "Black Han Sans",sans-serif;white-space:nowrap}
+.num{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:12px;background:var(--tang);color:#fff;font:600 13px sans-serif;margin-right:6px;vertical-align:2px}
+.num.o{background:transparent;color:var(--tang);border:2px solid var(--tang)}
+.name{font-weight:600;font-size:17px}
+.name a,.opt a{color:inherit;text-decoration-color:var(--tang);text-underline-offset:3px}
+.tag{display:inline-block;font-size:13px;font-weight:400;border-radius:6px;padding:1px 7px;margin-left:6px;background:var(--tang2);vertical-align:2px}
+.note{color:var(--mute);font-size:15px;margin-top:2px}
+.alt{margin-top:6px;font-size:15px;border-left:3px solid var(--green);padding-left:10px}
+.alt b{color:var(--green)}
+.q{font-size:14px;font-weight:600;color:var(--tang);margin:2px 0 6px}
+.opts{display:grid;gap:8px;margin-top:4px}
+.opt{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card)}
+.opt.lead{border-color:var(--tang)}
+.ohead{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.vote{border:1.5px solid var(--tang);background:transparent;color:var(--ink);border-radius:10px;padding:6px 12px;font:600 14px "IBM Plex Sans KR",sans-serif;min-height:40px;cursor:pointer;white-space:nowrap}
+.vote[aria-pressed=true]{background:var(--tang);color:#fff}
+.who{font-size:14px;color:var(--mute);margin-top:6px}
+.who span{display:inline-block;background:var(--tang2);border-radius:999px;padding:1px 9px;margin:2px 3px 2px 0;color:var(--ink)}
+.warn{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}.warn span{font-size:13px;border-radius:6px;padding:2px 8px;background:light-dark(#fde8e6,#3b1a17);color:light-dark(#9b2318,#ffb4a8)}.warn span.ok{background:light-dark(#e3f4ea,#163325);color:var(--green)}
+.status.bad{color:light-dark(#9b2318,#ffb4a8);font-weight:600}
+.cnt{font-size:14px;color:var(--mute);margin-left:auto;margin-right:8px}
+.foot{margin-top:28px;font-size:13px;color:var(--mute)}
+@media(max-width:600px){.stop{grid-template-columns:3.9em minmax(0,1fr)}.time{font-size:18px}}
+@media(prefers-reduced-motion:no-preference){.route{stroke-dasharray:6 7;animation:dash 20s linear infinite}@keyframes dash{to{stroke-dashoffset:-260}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1 id="h1"></h1><p class="sub" id="sub"></p></div>
+    <div class="lang" role="group" aria-label="Language"><button data-l="ko">한국어</button><button data-l="en">English</button></div>
+  </div>
+  <div class="me" role="group" id="me"></div>
+  <p class="status" id="status" role="status"></p>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="fig"><svg id="map" viewBox="0 0 800 455" role="img" aria-label="map"></svg></div>
+  <p class="hint" id="hint"></p>
+  <ol class="list" id="list"></ol>
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+{
+const T={
+ ko:{h1:"연구실 제주 여행",sub:"12월 2일(수)부터 4일(금)까지, 숙소는 중문 부영 리조트. 내 이름을 누르고 선택지가 있는 일정에 투표하세요. 장소 이름이나 지도 핀을 누르면 네이버지도가 열립니다.",
+  hint:"귤색 선은 표가 가장 많은 선택지를 따라가고, 빈 핀은 다른 선택지입니다. 섬 모양은 대략적인 그림이에요.",
+  foot:"🐷 = 돼지고기 메뉴, 초록 줄 = 돼지고기 못 먹는 사람용 대안. 영업시간과 웨이팅은 출발 전에 한 번 더 확인하세요. 투표 칸은 링크를 아는 누구나 고칠 수 있어요.",
+  pork:"돼지고기",altT:"돼지고기 대안",meL:"나는",pick:"고르기",picked:"선택함 ✓",votes:n=>n+"표",
+  needMe:"먼저 이름을 눌러주세요",saveFail:"저장이 안 됐어요, 다시 눌러주세요",offline:"투표 서버 연결 안 됨. 일정은 그대로 볼 수 있어요",
+  loading:"투표 불러오는 중",saving:"저장 중",synced:s=>s+" 기준 투표 현황, 20초마다 새로 읽어요",
+  day:["1일차","2일차","3일차"],date:["12/2 수","12/3 목","12/4 금"]},
+ en:{h1:"Lab trip to Jeju",sub:"Wed Dec 2 to Fri Dec 4, staying at Booyoung Resort in Jungmun. Tap your name, then vote on the stops that have options. Tap a place name or map pin to open it in Naver Map.",
+  hint:"The orange line follows the option with the most votes; hollow pins are the other options. The island outline is approximate.",
+  foot:"🐷 = pork dish; green line = option for the member who can't eat pork. Double-check hours and waits before going. Anyone with the link can change votes.",
+  pork:"Pork",altT:"No-pork option",meL:"I am",pick:"Pick",picked:"Picked ✓",votes:n=>n+(n===1?" vote":" votes"),
+  needMe:"Tap your name first",saveFail:"Didn't save, please tap again",offline:"Can't reach the vote server. The schedule still works",
+  loading:"Loading votes",saving:"Saving",synced:s=>"Votes as of "+s+", refreshed every 20 s",
+  day:["Day 1","Day 2","Day 3"],date:["Wed 12/2","Thu 12/3","Fri 12/4"]}};
+
+const MEMBERS=[["prof","교수님","Professor"],["daun","다운","Daun"],["jh","정현","Jeonghyeon"],["sh","수현","Suhyeon"],["camila","카밀라","Camila"],["sy","서연","Seoyeon"],["jw","지원","Jiwon"],["yw","예원","Yewon"],["jiu","지우","Jiwoo"]];
+// 사람마다 jsonblob 하나. setup.html로 만든 ID를 넣는다
+const BLOBS={prof:"",daun:"",jh:"",sh:"",camila:"",sy:"",jw:"",yw:"",jiu:""};
+const API="https://jsonblob.com/api/jsonBlob/";
+
+const DAYS=[
+{id:"d1",stops:[
+ {t:"07:00",n:["연구실 집합, 청주공항 출발","Meet at the lab, leave for Cheongju Airport"],note:["아침: 공항 가는 길이나 청주공항에서 김밥, 샌드위치로 간단히","Breakfast: grab gimbap or a sandwich on the way"]},
+ {t:"10:35",n:["제주국제공항 도착","Arrive at Jeju Airport"],q:"제주국제공항",ll:[33.507,126.493],note:["대한항공 청주 09:25 출발","Korean Air, departs Cheongju 09:25"]},
+ {t:"11:00",n:["렌터카 받기","Pick up rental cars"],note:["다운 차: 교수님, 수현, 카밀라 (서연은 오후 합류) / 정현 차: 지원, 예원, 지우","Daun's car: Professor, Suhyeon, Camila (Seoyeon joins later) / Jeonghyeon's car: Jiwon, Yewon, Jiwoo"]},
+ {t:"11:50",n:["점심: 애월 부두식당","Lunch: Aewol Budu Sikdang"],q:"애월 부두식당",ll:[33.452,126.309],note:["60년 된 옥돔집. 옥돔구이, 옥돔지리. 현금만 받음","60-year-old tilefish place. Cash only"],w:[["단체 가능 여부 전화 확인","Call to check group seating"]]},
+ {t:"13:30",n:["오설록 티뮤지엄","Osulloc Tea Museum"],q:"오설록 티뮤지엄",ll:[33.306,126.289]},
+ {t:"15:40",n:["부영 리조트 체크인","Check in at Booyoung Resort"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428]},
+ {t:"16:30",n:["ICC 제주 학회 등록, 사진","Conference registration at ICC Jeju"],q:"제주국제컨벤션센터",ll:[33.241,126.413]},
+ {t:"16:50",poll:"d1h",q2:["주상절리 아니면 카페","Cliffs or café"],opts:[
+   {n:["중문 대포 주상절리","Jusangjeolli Cliffs (Daepo)"],q:"중문대포해안주상절리대",ll:[33.237,126.424],note:["숙소 바로 앞. 해 지기 전에","Right by the resort, before sunset"]},
+   {n:["카페오션 (중문)","Cafe Ocean (Jungmun)"],q:"카페오션 중문",ll:[33.249,126.411],note:["롯데호텔 옆 절벽 위, 통창 바다 뷰","Cliff-top ocean view next to Lotte Hotel"]}]},
+ {t:"17:10",n:["서연 합류","Seoyeon joins"],note:["16:00 도착 후 공항 리무진 600번 타고 중문으로","Lands 16:00, bus 600 to Jungmun"]},
+ {t:"19:00",n:["저녁: 희신이네","Dinner: Heesinine"],q:"서귀포 희신이네",ll:[33.258,126.537],note:["닭 요리 코스. 여럿이어야 코스 가능. 테이블 10개 이상으로 넓은 편","Chicken course, needs a group. Spacious (10+ tables)"],w:[["캐치테이블 대기","CatchTable waitlist"],["주차 어려움","Tight parking"]],alt:["닭 코스라 그대로 OK. 탕수육만 빼고 주문","Chicken course is fine; skip the sweet-and-sour pork"]}
+]},
+{id:"d2",stops:[
+ {t:"08:00",poll:"d2a",q2:["아침 (메뉴는 바뀔 수 있음)","Breakfast (menu may change)"],opts:[
+   {n:["제주오성 중문본점","Jeju Oseong Jungmun"],q:"제주오성 중문본점",ll:[33.252,126.413],note:["오전 11시 전 아침 메뉴 1만원. 전복죽, 성게미역국, 뚝배기, 솥밥","₩10,000 breakfast before 11am: abalone porridge, sea urchin soup, stews"]},
+   {n:["아침 안 먹기","Skip breakfast"],note:["숙소에서 쉬다가 학회장으로","Rest, then go to the conference"]}]},
+ {t:"10:00",n:["학회 참석","Conference"],q:"제주국제컨벤션센터",ll:[33.241,126.413]},
+ {t:"12:00",n:["점심: 원조 중문 보말칼국수","Lunch: Wonjo Jungmun Bomal Kalguksu"],q:"원조 중문 보말칼국수",ll:[33.252,126.419],pork:1,note:["몸국(돼지 육수), 흑돼지수육. 자리 넓음. 월요일만 휴무","Momguk (pork broth), boiled pork. Roomy. Closed Mondays"],w:[["주차 어려움","Tight parking"]],alt:["같은 가게에서 보말칼국수나 보말죽","Sea snail noodles or porridge at the same place"]},
+ {t:"13:30",poll:"d2d",q2:["귤 따기 아니면 카페","Tangerine picking or café"],opts:[
+   {n:["귤 따기 체험","Tangerine picking"],href:"https://naver.me/FJbQqnkU",note:["보내준 링크의 농장. 위치는 링크에서 확인","Farm from the shared link"]},
+   {n:["나우카페 제주 (중문)","Now Cafe Jeju (Jungmun)"],q:"나우카페 제주 중문",ll:[33.252,126.410],note:["중문 베이커리 카페","Bakery café in Jungmun"]}]},
+ {t:"15:30",poll:"d2g",q2:["레이저아레나 아니면 카페","Laser Arena or café"],opts:[
+   {n:["중문 레이저아레나엑스 (실내)","Laser Arena X, Jungmun (indoor)"],q:"중문 레이저아레나엑스",note:["비 와도 OK. 영업시간 미확인","Works in rain. Hours not confirmed"]},
+   {n:["유동커피 (서귀포)","Yudong Coffee (Seogwipo)"],q:"유동커피 서귀포",ll:[33.248,126.561],note:["직접 볶는 로스터리. 올레시장 근처라 저녁과 바로 이어짐","Roastery near Olle Market, right before dinner"]}]},
+ {t:"18:30",n:["저녁: 제일수산 횟집 (서귀포)","Dinner: Jeil Susan (Seogwipo)"],q:"제일수산 횟집 서귀포",ll:[33.250,126.561],note:["고등어회, 방어회 모둠. 비린내 없다는 평이 많음. 딱새우회는 메뉴 확인. 다른 안: 우정회센타 2호점 (손님이 많아 포장도 30분 대기)","Mackerel and yellowtail sashimi. Backup: Ujeong Hoe Center 2 (busy, 30 min wait even for takeout)"],w:[["9명 자리 전화 확인","Call to check seating for 9"]]},
+ {t:"20:00",n:["천지연 폭포 야경","Cheonjiyeon Falls at night"],q:"천지연폭포",ll:[33.247,126.554],note:["22시까지 조명, 입장은 21:20까지. 입장료 2,000원","Lit until 22:00, last entry 21:20. ₩2,000"]}
+]},
+{id:"d3",stops:[
+ {t:"08:30",poll:"d3a",q2:["아침 (메뉴는 바뀔 수 있음)","Breakfast (menu may change)"],opts:[
+   {n:["고집돌우럭 중문점","Gojip Dol Ureok Jungmun"],q:"고집돌우럭 중문점",ll:[33.255,126.421],note:["아침 8시부터 한식 아침. 전복죽, 옥돔구이. 점심엔 매우 붐빔","Korean breakfast from 8am. Very busy at lunch"]},
+   {n:["아침 안 먹기","Skip breakfast"],note:["체크아웃 준비하면서 숙소에서","Pack up before checkout"]}]},
+ {t:"10:30",n:["체크아웃","Check out"],q:"제주 부영호텔앤리조트",ll:[33.239,126.428]},
+ {t:"10:50",n:["카멜리아힐 (동백)","Camellia Hill"],q:"카멜리아힐",ll:[33.290,126.369],note:["12월이 동백철","December is camellia season"]},
+ {t:"12:30",poll:"d3d",q2:["점심 (흑돼지 아니면 해산물)","Lunch (black pork or seafood)"],opts:[
+   {n:["도민상회본점 한림협재흑돼지","Domin Sanghoe (black pork)"],q:"도민상회본점 제주한림협재흑돼지",ll:[33.392,126.245],pork:1,note:["숙성 흑돼지 + 찌개 + 밥 세트","Aged black pork set with stew and rice"],w:[["웨이팅, 단체 정보 없음: 전화 확인","No wait or group info: call ahead"]],alt:["같은 가게 해물된장찌개(딱새우, 전복)","Seafood doenjang stew at the same place"]},
+   {n:["한림 바다생각","Hallim Badasaenggak"],q:"한림 바다생각",ll:[33.414,126.262],note:["은갈치와 해산물. 한림항 근처 주민과 선원 단골집","Silver hairtail and seafood; a local favorite by Hallim port"]}]},
+ {t:"14:00",n:["협재 해변, 바다 보이는 카페","Hyeopjae Beach and a seaside café"],q:"협재해수욕장",ll:[33.394,126.239]},
+ {t:"16:00",n:["애월 한담 해안산책로","Aewol Handam coastal walk"],q:"한담해안산책로",ll:[33.462,126.310],note:["여기서 자매국수 캐치테이블 원격 대기 걸기","Join Jamae Guksu's CatchTable waitlist from here"]},
+ {t:"18:00",poll:"d3g",q2:["저녁 (고기국수 아니면 생선 백반)","Dinner (pork noodles or fish set meal)"],opts:[
+   {n:["자매국수","Jamae Guksu"],q:"자매국수",ll:[33.512,126.505],pork:1,note:["공항 근처 고기국수. 내부 넓고 대기석, 주차 넉넉. 회전 빠름","Pork noodle soup near the airport. Big hall, waiting seats, ample parking, fast turnover"],w:[["웨이팅 매우 김: 캐치테이블 원격 대기 필수","Very long waits: use CatchTable remote waitlist"],["9명 OK","OK for 9","ok"]]},
+   {n:["동도원","Dongdowon"],q:"동도원 제주",ll:[33.500,126.520],note:["공항 차로 9분. 고등어조림, 옥돔구이, 해물뚝배기에 반찬 12가지. 마감시간 확인","9 min from airport. Braised mackerel, grilled tilefish, seafood stew, 12 side dishes. Check closing time"]}]},
+ {t:"19:00",n:["도두 카페, 서연 공항 내려주기","Café in Dodu, drop Seoyeon at the airport"],q:"도두동 카페",ll:[33.507,126.475]},
+ {t:"20:20",n:["렌터카 반납","Return rental cars"],note:["셔틀 타고 공항까지 20분 잡기","Allow 20 min for the shuttle"]},
+ {t:"22:10",n:["제주 출발, 청주 23:20 도착","Fly Jeju 22:10, arrive Cheongju 23:20"],q:"제주국제공항",ll:[33.507,126.493],note:["대한항공. 20:10인지 22:10인지 항공권으로 확인","Korean Air. Confirm 20:10 vs 22:10 on the ticket"]}
+]}];
+
+const COAST=[[33.300,126.163],[33.345,126.188],[33.392,126.236],[33.430,126.275],[33.462,126.312],[33.482,126.390],[33.513,126.475],[33.520,126.560],[33.545,126.665],[33.560,126.760],[33.528,126.855],[33.490,126.910],[33.462,126.942],[33.420,126.925],[33.330,126.850],[33.285,126.720],[33.243,126.600],[33.238,126.490],[33.245,126.410],[33.228,126.320],[33.205,126.270],[33.228,126.200],[33.270,126.168]];
+const P=([la,lo])=>[+((lo-126.13)*930).toFixed(1),+((33.585-la)*1110).toFixed(1)];
+const nav=q=>"https://map.naver.com/p/search/"+encodeURIComponent(q);
+const $=id=>document.getElementById(id);
+let lang="ko",day="d1";
+try{lang=localStorage.getItem("jeju-lang")||"ko"}catch(e){}
+if(!T[lang])lang="ko";
+const L=a=>Array.isArray(a)?a[lang==="ko"?0:1]:a;
+const t=k=>T[lang][k];
+
+// 투표 상태: PICKS[멤버키][일정ID] = "a" | "b"
+let me="";try{me=localStorage.getItem("jeju-me")||""}catch(e){}
+if(!MEMBERS.some(m=>m[0]===me))me="";
+const PICKS={};MEMBERS.forEach(m=>PICKS[m[0]]={});
+const oid=i=>String.fromCharCode(97+i);
+const VALID={};DAYS.forEach(d=>d.stops.forEach(s=>{if(s.poll)VALID[s.poll]=s.opts.map((o,i)=>oid(i))}));
+const clean=p=>{const o={};if(p&&typeof p==="object")for(const k in VALID)if(VALID[k].includes(p[k]))o[k]=p[k];return o};
+const voters=(s,i)=>MEMBERS.filter(m=>PICKS[m[0]][s.poll]===oid(i));
+const lead=s=>{let b=0,bn=-1;s.opts.forEach((o,i)=>{const n=voters(s,i).length;if(n>bn){b=i;bn=n}});return b};
+const mname=m=>lang==="ko"?m[1]:m[2];
+let net="loading",syncedAt=null,msg="",pending=0,ver=0;
+
+function numberDay(d){let n=0;d.stops.forEach(s=>{if(s.opts){n++;s._n=n;s.opts.forEach((o,i)=>o._n=n+String.fromCharCode(97+i))}else if(s.ll){n++;s._n=n}else s._n=null})}
+function drawMap(){
+  const d=DAYS.find(x=>x.id===day);numberDay(d);
+  const isl=COAST.map(P).map(p=>p.join(",")).join(" ");const route=[],pins=[];
+  d.stops.forEach(s=>{
+    if(s.opts){const ld=s.opts[lead(s)];if(ld.ll)route.push(ld.ll);s.opts.forEach(o=>{if(o.ll)pins.push({ll:o.ll,lab:o._n,q:o.q,name:L(o.n),main:o===ld})})}
+    else if(s.ll){route.push(s.ll);pins.push({ll:s.ll,lab:String(s._n),q:s.q,name:L(s.n),main:true})}
+  });
+  const groups=new Map();
+  pins.forEach(p=>{const k=p.ll.join();if(!groups.has(k))groups.set(k,{...p,labs:[]});const g=groups.get(k);g.labs.push(p.lab);if(p.main)g.main=true});
+  let svgp="";
+  [...groups.values()].forEach(g=>{
+    const [x,y]=P(g.ll),lab=g.labs.join(","),w=12+lab.length*7.5,fill=g.main?"#e8700c":"#fff",tc=g.main?"#fff":"#e8700c";
+    svgp+=`<a href="${nav(g.q)}" target="_blank" rel="noopener"><title>${g.name}</title><circle cx="${x}" cy="${y}" r="5" fill="#fff" stroke="#e8700c" stroke-width="3"/><rect x="${x+7}" y="${y-23}" width="${w}" height="20" rx="10" fill="${fill}" stroke="#e8700c" stroke-width="1.5"/><text x="${x+7+w/2}" y="${y-9}" text-anchor="middle" font-size="13" font-weight="600" fill="${tc}" font-family="sans-serif">${lab}</text></a>`;
+  });
+  const [hx,hy]=P([33.362,126.533]),[jx,jy]=P([33.515,126.53]),[sx,sy]=P([33.25,126.56]);
+  $("map").innerHTML=`<polygon points="${isl}" fill="var(--land)" stroke="var(--land2)" stroke-width="6" stroke-linejoin="round"/><polygon points="${hx-46},${hy+26} ${hx},${hy-22} ${hx+46},${hy+26}" fill="var(--land2)"/>
+   <text x="${hx}" y="${hy+44}" text-anchor="middle" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"한라산":"Hallasan"}</text>
+   <text x="${jx}" y="${jy+26}" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"제주시":"Jeju City"}</text>
+   <text x="${sx}" y="${sy-16}" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"서귀포":"Seogwipo"}</text>
+   <polyline class="route" points="${route.map(ll=>P(ll).join(",")).join(" ")}" fill="none" stroke="#e8700c" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>${svgp}`;
+}
+const link=x=>x.q?`<a href="${nav(x.q)}" target="_blank" rel="noopener">${L(x.n)}</a>`:x.href?`<a href="${x.href}" target="_blank" rel="noopener">${L(x.n)}</a>`:L(x.n);
+const extra=x=>`${x.note?`<div class="note">${L(x.note)}</div>`:""}${x.w?`<div class="warn">${x.w.map(w=>`<span${w[2]?' class="ok"':""}>${L(w)}</span>`).join("")}</div>`:""}${x.alt?`<div class="alt"><b>${t("altT")}</b> ${L(x.alt)}</div>`:""}`;
+const porkTag=x=>x.pork?`<span class="tag">🐷 ${t("pork")}</span>`:"";
+function drawList(){
+  const d=DAYS.find(x=>x.id===day);
+  $("list").innerHTML=d.stops.map(s=>{
+    if(!s.opts)return `<li class="stop"><div class="time">${s.t}</div><div><div class="name">${s._n?`<span class="num">${s._n}</span>`:""}${link(s)}${porkTag(s)}</div>${extra(s)}</div></li>`;
+    const li=lead(s);
+    return `<li class="stop"><div class="time">${s.t}</div><div><div class="q">${L(s.q2)}</div><div class="opts">${s.opts.map((o,i)=>{
+      const vs=voters(s,i),mine=!!me&&PICKS[me][s.poll]===oid(i);
+      return `<div class="opt${i===li?" lead":""}"><div class="ohead"><div class="name"><span class="num${i===li?"":" o"}">${o._n}</span>${link(o)}${porkTag(o)}</div><span class="cnt">${t("votes")(vs.length)}</span><button class="vote" data-v="${s.poll}:${oid(i)}" aria-pressed="${mine}">${mine?t("picked"):t("pick")}</button></div>${extra(o)}${vs.length?`<div class="who">${vs.map(m=>`<span>${mname(m)}</span>`).join("")}</div>`:""}</div>`}).join("")}</div></div></li>`;
+  }).join("");
+}
+function drawMe(){
+  $("me").setAttribute("aria-label",t("meL"));
+  $("me").innerHTML=`<b>${t("meL")}</b>`+MEMBERS.map(m=>`<button class="chip" data-m="${m[0]}" aria-pressed="${m[0]===me}">${mname(m)}</button>`).join("");
+}
+function drawStatus(){
+  const k=msg||(net==="off"?"offline":pending?"saving":net==="loading"||!syncedAt?"loading":"");
+  $("status").textContent=k?t(k):t("synced")(syncedAt.toLocaleTimeString(lang==="ko"?"ko-KR":"en-US",{hour:"2-digit",minute:"2-digit"}));
+  $("status").className="status"+(["needMe","saveFail","offline"].includes(k)?" bad":"");
+}
+async function load(){
+  const ms=MEMBERS.filter(m=>BLOBS[m[0]]),v=ver;
+  const res=await Promise.all(ms.map(m=>fetch(API+BLOBS[m[0]],{headers:{Accept:"application/json"},cache:"no-store"})
+    .then(r=>r.ok?r.json():Promise.reject()).then(j=>[m[0],clean(j&&j.picks)]).catch(()=>null)));
+  const ok=res.filter(Boolean);
+  if(!ok.length){net="off";drawStatus();return}
+  const before=JSON.stringify(PICKS);
+  ok.forEach(([k,p])=>{if(k!==me||(!pending&&v===ver))PICKS[k]=p});
+  net="on";syncedAt=new Date();
+  if(JSON.stringify(PICKS)!==before){drawMap();drawList()}
+  drawStatus();
+}
+async function vote(pid,o){
+  if(!me){msg="needMe";drawStatus();$("me").scrollIntoView({block:"center"});return}
+  msg="";const mine={...PICKS[me]};
+  if(mine[pid]===o)delete mine[pid];else mine[pid]=o;
+  PICKS[me]=mine;ver++;pending++;
+  drawMap();drawList();drawStatus();
+  const b=$("list").querySelector(`[data-v="${pid}:${o}"]`);if(b)b.focus();
+  let ok=false;
+  if(BLOBS[me])try{const r=await fetch(API+BLOBS[me],{method:"PUT",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({picks:mine})});ok=r.ok}catch(e){}
+  pending--;if(ok)net="on";else msg="saveFail";
+  drawStatus();
+}
+function drawChrome(){
+  document.documentElement.lang=lang;document.title=t("h1");
+  $("h1").textContent=t("h1");$("sub").textContent=t("sub");$("hint").textContent=t("hint");$("foot").textContent=t("foot");
+  document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===lang));
+  $("tabs").innerHTML=DAYS.map((d,i)=>`<button class="tab" role="tab" aria-selected="${d.id===day}" data-d="${d.id}">${t("day")[i]}<small>${t("date")[i]}</small></button>`).join("");
+}
+function render(){drawChrome();drawMe();drawStatus();drawMap();drawList()}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-l],[data-d],[data-m],[data-v]");if(!b)return;
+  if(b.dataset.l){lang=b.dataset.l;try{localStorage.setItem("jeju-lang",lang)}catch(x){}render();return}
+  if(b.dataset.d){day=b.dataset.d;drawChrome();drawMap();drawList();return}
+  if(b.dataset.m){me=b.dataset.m;try{localStorage.setItem("jeju-me",me)}catch(x){}if(msg==="needMe")msg="";drawMe();drawStatus();drawList();return}
+  if(b.dataset.v){const [p,o]=b.dataset.v.split(":");vote(p,o)}
+});
+render();load();setInterval(load,20000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
+}
+</script>
+</body>
+</html>
