@@ -61,6 +61,7 @@ ol.list{list-style:none;margin:0;padding:0}
 .who span{display:inline-block;background:var(--tang2);border-radius:999px;padding:1px 9px;margin:2px 3px 2px 0;color:var(--ink)}
 .warn{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}.warn span{font-size:13px;border-radius:6px;padding:2px 8px;background:light-dark(#fde8e6,#3b1a17);color:light-dark(#9b2318,#ffb4a8)}.warn span.ok{background:light-dark(#e3f4ea,#163325);color:var(--green)}
 .status.bad{color:light-dark(#9b2318,#ffb4a8);font-weight:600}
+.car{display:inline-block;font-size:13px;font-weight:600;color:#fff;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:2px;white-space:nowrap}
 .cnt{font-size:14px;color:var(--mute);margin-left:auto;margin-right:8px}
 .foot{margin-top:28px;font-size:13px;color:var(--mute)}
 @media(max-width:600px){.stop{grid-template-columns:3.9em minmax(0,1fr)}.time{font-size:18px}}
@@ -86,14 +87,14 @@ ol.list{list-style:none;margin:0;padding:0}
 {
 const T={
  ko:{h1:"연구실 제주 여행",sub:"12월 2일(수)부터 4일(금)까지, 숙소는 중문 부영 리조트. 내 이름을 누르고 선택지가 있는 일정에 투표하세요. 장소 이름이나 지도 핀을 누르면 네이버지도가 열립니다.",
-  hint:"귤색 선은 표가 가장 많은 선택지를 따라가고, 빈 핀은 다른 선택지입니다. 섬 모양은 대략적인 그림이에요.",
+  hint:"차 2대가 선택지마다 따로 갈 수 있어요. 각 차는 그 차에 탄 사람들 표의 다수를 따르고, 동점이면 운전자(다운, 정현)의 선택을 따라요. 귤색 선은 다운 차, 갈라지는 구간의 파란 선은 정현 차, 빈 핀은 아무 차도 안 가는 곳이에요. 섬 모양은 대략적인 그림이에요.",
   foot:"🐷 = 돼지고기 메뉴, 초록 줄 = 돼지고기 못 먹는 사람용 대안. 영업시간과 웨이팅은 출발 전에 한 번 더 확인하세요. 투표 칸은 링크를 아는 누구나 고칠 수 있어요.",
   pork:"돼지고기",altT:"돼지고기 대안",meL:"나는",pick:"고르기",picked:"선택함 ✓",votes:n=>n+"표",
   needMe:"먼저 이름을 눌러주세요",saveFail:"저장이 안 됐어요, 다시 눌러주세요",offline:"투표 서버 연결 안 됨. 일정은 그대로 볼 수 있어요",
   loading:"투표 불러오는 중",saving:"저장 중",synced:s=>s+" 기준 투표 현황, 20초마다 새로 읽어요",
   day:["1일차","2일차","3일차"],date:["12/2 수","12/3 목","12/4 금"]},
  en:{h1:"Lab trip to Jeju",sub:"Wed Dec 2 to Fri Dec 4, staying at Booyoung Resort in Jungmun. Tap your name, then vote on the stops that have options. Tap a place name or map pin to open it in Naver Map.",
-  hint:"The orange line follows the option with the most votes; hollow pins are the other options. The island outline is approximate.",
+  hint:"The two cars can split at each choice. Each car follows the majority of its own riders; on a tie, the driver (Daun or Jeonghyeon) decides. Orange is Daun's car, blue shows where Jeonghyeon's car splits off, hollow pins are places neither car goes. The island outline is approximate.",
   foot:"🐷 = pork dish; green line = option for the member who can't eat pork. Double-check hours and waits before going. Anyone with the link can change votes.",
   pork:"Pork",altT:"No-pork option",meL:"I am",pick:"Pick",picked:"Picked ✓",votes:n=>n+(n===1?" vote":" votes"),
   needMe:"Tap your name first",saveFail:"Didn't save, please tap again",offline:"Can't reach the vote server. The schedule still works",
@@ -173,16 +174,36 @@ const clean=p=>{const o={};if(p&&typeof p==="object")for(const k in VALID)if(VAL
 const voters=(s,i)=>MEMBERS.filter(m=>PICKS[m[0]][s.poll]===oid(i));
 const lead=s=>{let b=0,bn=-1;s.opts.forEach((o,i)=>{const n=voters(s,i).length;if(n>bn){b=i;bn=n}});return b};
 const mname=m=>lang==="ko"?m[1]:m[2];
+// 차 2대. 선택지가 있는 일정은 차마다 따로 정한다:
+// 그 차 사람들 표의 다수 > 동점이면 운전자 표 > 그래도 못 정하면 전체 1등
+const CARS=[{d:"daun",m:["daun","prof","sh","camila","sy"],c:"#e8700c",n:["다운 차","Daun's car"]},
+            {d:"jh",m:["jh","jw","yw","jiu"],c:"#2b8fd6",n:["정현 차","Jeonghyeon's car"]}];
+const AWAY={d1h:["sy"]}; // 서연은 17:10 합류라 1일차 16:50 일정엔 없음
+function carPick(s,car){
+  const ms=car.m.filter(k=>!(AWAY[s.poll]||[]).includes(k));
+  const cnt=s.opts.map((o,i)=>ms.filter(k=>PICKS[k][s.poll]===oid(i)).length);
+  const top=Math.max(...cnt),g=lead(s);
+  if(!top)return g;
+  const best=cnt.flatMap((n,i)=>n===top?[i]:[]);
+  if(best.length===1)return best[0];
+  const dv=PICKS[car.d][s.poll],di=dv?dv.charCodeAt(0)-97:-1;
+  return best.includes(di)?di:best.includes(g)?g:best[0];
+}
+const carTags=(s,i)=>CARS.filter(c=>carPick(s,c)===i).map(c=>`<span class="car" style="background:${c.c}">🚗 ${L(c.n)}</span>`).join("");
 let net="loading",syncedAt=null,msg="",pending=0,ver=0;
 
 function numberDay(d){let n=0;d.stops.forEach(s=>{if(s.opts){n++;s._n=n;s.opts.forEach((o,i)=>o._n=n+String.fromCharCode(97+i))}else if(s.ll){n++;s._n=n}else s._n=null})}
 function drawMap(){
   const d=DAYS.find(x=>x.id===day);numberDay(d);
-  const isl=COAST.map(P).map(p=>p.join(",")).join(" ");const route=[],pins=[];
+  const isl=COAST.map(P).map(p=>p.join(",")).join(" ");const routes=CARS.map(()=>[]),pins=[];
   d.stops.forEach(s=>{
-    if(s.opts){const ld=s.opts[lead(s)];if(ld.ll)route.push(ld.ll);s.opts.forEach(o=>{if(o.ll)pins.push({ll:o.ll,lab:o._n,q:o.q,name:L(o.n),main:o===ld})})}
-    else if(s.ll){route.push(s.ll);pins.push({ll:s.ll,lab:String(s._n),q:s.q,name:L(s.n),main:true})}
+    if(s.opts){const ch=CARS.map(c=>carPick(s,c));ch.forEach((i,ci)=>{if(s.opts[i].ll)routes[ci].push(s.opts[i].ll)});s.opts.forEach((o,i)=>{if(o.ll)pins.push({ll:o.ll,lab:o._n,q:o.q,name:L(o.n),main:ch.includes(i)})})}
+    else if(s.ll){routes.forEach(r=>r.push(s.ll));pins.push({ll:s.ll,lab:String(s._n),q:s.q,name:L(s.n),main:true})}
   });
+  // 두 차 동선이 같으면 귤색 선 하나, 갈라지면 파란 선(정현 차)을 아래에 깔고 귤색(다운 차)을 위에
+  const pts=r=>r.map(ll=>P(ll).join(",")).join(" ");
+  const same=pts(routes[0])===pts(routes[1]);
+  const lines=(same?[0]:[1,0]).map(ci=>`<polyline class="route" points="${pts(routes[ci])}" fill="none" stroke="${same?CARS[0].c:CARS[ci].c}" stroke-width="${ci?5:3.5}" stroke-linecap="round" stroke-linejoin="round"/>`).join("");
   const groups=new Map();
   pins.forEach(p=>{const k=p.ll.join();if(!groups.has(k))groups.set(k,{...p,labs:[]});const g=groups.get(k);g.labs.push(p.lab);if(p.main)g.main=true});
   let svgp="";
@@ -195,7 +216,7 @@ function drawMap(){
    <text x="${hx}" y="${hy+44}" text-anchor="middle" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"한라산":"Hallasan"}</text>
    <text x="${jx}" y="${jy+26}" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"제주시":"Jeju City"}</text>
    <text x="${sx}" y="${sy-16}" font-size="13" fill="#c9d1d6" font-family="sans-serif">${lang==="ko"?"서귀포":"Seogwipo"}</text>
-   <polyline class="route" points="${route.map(ll=>P(ll).join(",")).join(" ")}" fill="none" stroke="#e8700c" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>${svgp}`;
+   ${lines}${svgp}`;
 }
 const link=x=>x.q?`<a href="${nav(x.q)}" target="_blank" rel="noopener">${L(x.n)}</a>`:x.href?`<a href="${x.href}" target="_blank" rel="noopener">${L(x.n)}</a>`:L(x.n);
 const extra=x=>`${x.note?`<div class="note">${L(x.note)}</div>`:""}${x.w?`<div class="warn">${x.w.map(w=>`<span${w[2]?' class="ok"':""}>${L(w)}</span>`).join("")}</div>`:""}${x.alt?`<div class="alt"><b>${t("altT")}</b> ${L(x.alt)}</div>`:""}`;
@@ -204,10 +225,11 @@ function drawList(){
   const d=DAYS.find(x=>x.id===day);
   $("list").innerHTML=d.stops.map(s=>{
     if(!s.opts)return `<li class="stop"><div class="time">${s.t}</div><div><div class="name">${s._n?`<span class="num">${s._n}</span>`:""}${link(s)}${porkTag(s)}</div>${extra(s)}</div></li>`;
-    const li=lead(s);
+    const ch=CARS.map(c=>carPick(s,c));
     return `<li class="stop"><div class="time">${s.t}</div><div><div class="q">${L(s.q2)}</div><div class="opts">${s.opts.map((o,i)=>{
       const vs=voters(s,i),mine=!!me&&PICKS[me][s.poll]===oid(i);
-      return `<div class="opt${i===li?" lead":""}"><div class="ohead"><div class="name"><span class="num${i===li?"":" o"}">${o._n}</span>${link(o)}${porkTag(o)}</div><span class="cnt">${t("votes")(vs.length)}</span><button class="vote" data-v="${s.poll}:${oid(i)}" aria-pressed="${mine}">${mine?t("picked"):t("pick")}</button></div>${extra(o)}${vs.length?`<div class="who">${vs.map(m=>`<span>${mname(m)}</span>`).join("")}</div>`:""}</div>`}).join("")}</div></div></li>`;
+      const on=ch.includes(i);
+      return `<div class="opt${on?" lead":""}"><div class="ohead"><div class="name"><span class="num${on?"":" o"}">${o._n}</span>${link(o)}${porkTag(o)}${carTags(s,i)}</div><span class="cnt">${t("votes")(vs.length)}</span><button class="vote" data-v="${s.poll}:${oid(i)}" aria-pressed="${mine}">${mine?t("picked"):t("pick")}</button></div>${extra(o)}${vs.length?`<div class="who">${vs.map(m=>`<span>${mname(m)}</span>`).join("")}</div>`:""}</div>`}).join("")}</div></div></li>`;
   }).join("");
 }
 function drawMe(){
