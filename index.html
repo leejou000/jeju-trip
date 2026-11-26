@@ -254,7 +254,8 @@ function flexPlan(s){
   }
   return best;
 }
-const riders=s=>{const p=flexPlan(s);if(p.ch[0]===p.ch[1])return"";
+const SHOW_RIDERS=false; // 다운 요청으로 탑승자 명단은 안 보임 (2026-11-26). 다시 보이려면 true
+const riders=s=>{if(!SHOW_RIDERS)return"";const p=flexPlan(s);if(p.ch[0]===p.ch[1])return"";
   const nm=k=>mname(MEMBERS.find(m=>m[0]===k));
   return `<div class="who">${CARS.map((c,ci)=>`<b style="color:${c.c}">🚗 ${L(c.n)} (${s.opts[p.ch[ci]]._n})</b> ${p.R[ci].map(nm).join(", ")}`).join("<br>")}</div>`};
 function carPick(s,car){
@@ -342,6 +343,7 @@ const REPLIES={
  "1795660026998":["2일차 15:30 투표에 「제주 중문카트」를 세 번째 선택지로 넣었어요","Added Jungmun Go-Kart as a third option to the Day 2 15:30 vote"],
  "1795661346537":["바꿨어요. 이제 모든 날 운전자는 자기 차에 고정, 차는 운전자가 고른 곳으로 가고, 나머지는 고른 쪽 차에 타요","Done: on every day the driver stays with their car, the car goes where the driver picked, and everyone else rides to their own pick"],
  "1795661209761":["바꿨어요. 차는 운전자가 고른 곳으로 가요 (정현 결정)","Done: each car now goes where its driver picked (Jeonghyeon's call)"],
+ "1795665799000":["일정 아래 탑승자 명단(🚗 다운 차 (5b) 다운, 수현…)을 모두 뺐어요. 선택지의 차 태그와 지도 선은 그대로예요","Removed all rider lists under the stops; the car tags and map lines stay"],
  "1795663625437":["지도 아래 설명을 빼고, 지도가 그날 지점들만 확대해서 보여요. 번호표 크기도 폰에서 읽을 수 있게 키웠어요","Removed the text under the map; the map now zooms to that day's stops with phone-readable labels"],
  "1795661807879":["고쳤어요. 이름을 안 고르고 고르기, 올리기, 보내기를 누르면 이름 고르기 창이 뜨고, 이름을 누르면 그 동작이 바로 이어져요","Fixed: tapping Pick, Post, or Send without a name opens a name picker, and your tap goes through right after you choose"],
  "1795661382147":["보말칼국수는 빼고 몸국, 보말국 파는 몰고랑식당(서귀포 시내)을 넣었어요. 멜국까지 파는 집은 못 찾아서 메뉴는 전화로 확인해야 해요. 아침 포함 모든 일정에서 차는 운전자 선택을 따라요","Removed the sea snail noodle place and added Molgorang (momguk, sea snail soup) in Seogwipo; couldn't confirm anchovy soup. Every stop, breakfast included, now follows the driver's pick"],
