@@ -1,9 +1,10 @@
 // 제주 여행 투표와 게시판 저장소. 구글 시트의 확장 프로그램 > Apps Script에 통째로 붙여넣는다.
 // 첫 번째 시트: 한 줄 = 한 사람. A열 멤버 키, B열 투표(JSON), C열 마지막 저장 시각
 // 「게시판」 시트: 한 줄 = 글 하나. A 시각, B 멤버 키, C 날짜(d1, d2, d3, 빈칸=전체), D 내용, E 답(시트에서 직접 적으면 페이지에 보임)
-const KEYS = ["prof", "daun", "jh", "sh", "camila", "sy", "jw", "yw", "jiu"];
-const POLLS = ["d1h", "d2a", "d2d", "d2g", "d3a", "d3d", "d3g"];
-const OPTS = ["a", "b"];
+const KEYS = ["prof", "daun", "jh", "sh", "camila", "sy", "jw", "yw", "jiu", "jc"];
+// 일정 ID와 선택지 ID는 모양만 검사한다. 페이지에 투표가 새로 생겨도 다시 배포할 필요가 없게
+const POLL_RE = /^d[1-3][a-z0-9]{1,4}$/;
+const OPT_RE = /^[a-h]$/;
 const DAYS = ["", "d1", "d2", "d3"];
 
 function ss_() { return SpreadsheetApp.getActiveSpreadsheet(); }
@@ -36,7 +37,7 @@ function doPost(e) {
       return json_({ ok: true });
     }
     const p = {};
-    POLLS.forEach(k => { if (b.picks && OPTS.indexOf(b.picks[k]) >= 0) p[k] = b.picks[k]; });
+    Object.keys(b.picks || {}).slice(0, 40).forEach(k => { if (POLL_RE.test(k) && OPT_RE.test(String(b.picks[k]))) p[k] = b.picks[k]; });
     const sh = sheet_();
     const row = sh.getDataRange().getValues().findIndex(r => r[0] === b.who) + 1;
     if (row) sh.getRange(row, 2, 1, 2).setValues([[JSON.stringify(p), new Date()]]);
