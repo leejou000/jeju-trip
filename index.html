@@ -87,6 +87,9 @@ ol.list{list-style:none;margin:0;padding:0}
 #cform input{flex:1;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:44px}
 #cform input:focus{outline:3px solid var(--tang);outline-offset:1px}
 .foot{margin-top:28px;font-size:13px;color:var(--mute)}
+#pick{border:0;border-radius:16px;padding:18px;max-width:min(92vw,420px);background:var(--card);color:var(--ink);box-shadow:0 10px 40px rgba(0,0,0,.3)}
+#pick::backdrop{background:rgba(0,0,0,.45)}#pickT{font-weight:600;font-size:17px;margin:0 0 12px}
+#pickC{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 @media(max-width:600px){.stop{grid-template-columns:3.9em minmax(0,1fr)}.time{font-size:18px}}
 @media(prefers-reduced-motion:no-preference){.route{stroke-dasharray:6 7;animation:dash 20s linear infinite}@keyframes dash{to{stroke-dashoffset:-260}}}
 </style>
@@ -107,6 +110,7 @@ ol.list{list-style:none;margin:0;padding:0}
   <section class="board" id="chat"></section>
   <section class="board" id="board"></section>
   <p class="foot" id="foot"></p>
+  <dialog id="pick" aria-labelledby="pickT"><p id="pickT"></p><div id="pickC"></div><button class="vote" id="pickX"></button></dialog>
 </div>
 
 <script>
@@ -121,7 +125,7 @@ const T={
   bH:"제안 게시판",bP:"바꾸고 싶은 일정, 가고 싶은 곳, 추가하고 싶은 것을 적어주세요. 정현이 보고 반영하면 답을 달아요.",
   bDay:"관련 날짜",bAll:"전체 일정",bPh:"예: 2일차 오후에 쇠소깍도 가고 싶어요",bSend:"올리기",bEmpty:"아직 글이 없어요",
   bFail:"글이 안 올라갔어요, 다시 눌러주세요",bSent:"올렸어요 ✓",bReply:"답",bNone:"해결 안 된 글이 없어요",bArch:n=>"해결된 글 "+n+"개 보기",
-  cH:"채팅",cP:"아무 이야기나 편하게. 일정에 반영할 제안은 아래 게시판에 적어주세요.",cPh:"메시지 입력",cSend:"보내기",cEmpty:"아직 메시지가 없어요",cFail:"안 보내졌어요, 다시 눌러주세요",cOff:"채팅 서버 준비 중이에요",cSending:"보내는 중",
+  cH:"채팅",cP:"아무 이야기나 편하게. 일정에 반영할 제안은 아래 게시판에 적어주세요.",cPh:"메시지 입력",cSend:"보내기",cEmpty:"아직 메시지가 없어요",cFail:"안 보내졌어요, 다시 눌러주세요",cOff:"채팅 서버 준비 중이에요",pickT:"누구세요? 내 이름을 눌러주세요",pickX:"닫기",cSending:"보내는 중",
   day:["1일차","2일차","3일차"],date:["12/2 수","12/3 목","12/4 금"]},
  en:{h1:"Lab trip to Jeju",sub:"Wed Dec 2 to Fri Dec 4, staying at Booyoung Resort in Jungmun. Tap your name, then vote on the stops that have options. Tap a place name or map pin to open it in Naver Map.",
   hint:"The two cars can split at each choice. Drivers (Daun, Jeonghyeon) stay with their car, and each car goes where its driver picked. Everyone else rides in the car going to their pick (Daun's car seats 5, 7 on Day 2; Jeonghyeon's seats 5). Who rides where is listed under split stops. Jaechang comes in his own car (🚙) to what he picks. Orange is Daun's car, blue shows where Jeonghyeon's car splits off, hollow pins are places neither car goes. The island outline is approximate.",
@@ -132,7 +136,7 @@ const T={
   bH:"Suggestion board",bP:"Want to change a stop, go somewhere, or add something? Write it here. Jeonghyeon will reply once it's reflected.",
   bDay:"Related day",bAll:"Whole trip",bPh:"e.g. I'd also like to see Soesokkak on Day 2 afternoon",bSend:"Post",bEmpty:"No posts yet",
   bFail:"Didn't post, please try again",bSent:"Posted ✓",bReply:"Reply",bNone:"No open posts",bArch:n=>"Show "+n+" resolved posts",
-  cH:"Chat",cP:"Talk about anything. Put suggestions for the schedule on the board below.",cPh:"Type a message",cSend:"Send",cEmpty:"No messages yet",cFail:"Not sent, please try again",cOff:"Chat server is getting ready",cSending:"Sending",
+  cH:"Chat",cP:"Talk about anything. Put suggestions for the schedule on the board below.",cPh:"Type a message",cSend:"Send",cEmpty:"No messages yet",cFail:"Not sent, please try again",cOff:"Chat server is getting ready",pickT:"Who are you? Tap your name",pickX:"Close",cSending:"Sending",
   day:["Day 1","Day 2","Day 3"],date:["Wed 12/2","Thu 12/3","Fri 12/4"]}};
 
 const MEMBERS=[["prof","교수님","Professor"],["daun","다운","Daun"],["jh","정현","Jeonghyeon"],["sh","수현","Suhyeon"],["camila","카밀라","Camila"],["sy","서연","Seoyeon"],["jw","지원","Jiwon"],["yw","예원","Yewon"],["jiu","지우","Jiwoo"],["jc","재창","Jaechang"]];
@@ -328,6 +332,7 @@ const REPLIES={
  "1795660026998":["2일차 15:30 투표에 「제주 중문카트」를 세 번째 선택지로 넣었어요","Added Jungmun Go-Kart as a third option to the Day 2 15:30 vote"],
  "1795661346537":["바꿨어요. 이제 모든 날 운전자는 자기 차에 고정, 차는 운전자가 고른 곳으로 가고, 나머지는 고른 쪽 차에 타요","Done: on every day the driver stays with their car, the car goes where the driver picked, and everyone else rides to their own pick"],
  "1795661209761":["바꿨어요. 차는 운전자가 고른 곳으로 가요 (정현 결정)","Done: each car now goes where its driver picked (Jeonghyeon's call)"],
+ "1795661807879":["고쳤어요. 이름을 안 고르고 고르기, 올리기, 보내기를 누르면 이름 고르기 창이 뜨고, 이름을 누르면 그 동작이 바로 이어져요","Fixed: tapping Pick, Post, or Send without a name opens a name picker, and your tap goes through right after you choose"],
  "1795661382147":["보말칼국수는 빼고 몸국, 보말국 파는 몰고랑식당(서귀포 시내)을 넣었어요. 멜국까지 파는 집은 못 찾아서 메뉴는 전화로 확인해야 해요. 아침 포함 모든 일정에서 차는 운전자 선택을 따라요","Removed the sea snail noodle place and added Molgorang (momguk, sea snail soup) in Seogwipo; couldn't confirm anchovy soup. Every stop, breakfast included, now follows the driver's pick"],
  "1795661425949":["재창이가 고른 선택지에 「🚙 재창 차」 태그가 붙어요","Jaechang's pick now shows a \"🚙 Jaechang's car\" tag"],
  "1795661477271":["목, 금 아침 투표에 「호텔 조식 (부영 리조트)」을 넣었어요","Added \"Hotel breakfast (Booyoung Resort)\" to the Thursday and Friday breakfast votes"],
@@ -376,7 +381,7 @@ function drawPosts(){
 }
 async function post(){
   const m=$("bmsg"),text=$("btext").value.trim();
-  if(!me){m.textContent=t("needMe");m.className="status bad";$("me").scrollIntoView({block:"center"});return}
+  if(!me){askName(post);return}
   if(!text)return;
   $("bsend").disabled=true;let ok=false;
   if(API&&BOARD)try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"post",who:me,day:$("bday").value,text})});const j=await r.json();ok=!!(j&&j.ok)}catch(e){}
@@ -428,7 +433,7 @@ function drawMsgs(){
 }
 async function sendChat(){
   const m=$("cmsg"),text=$("ctext").value.trim();
-  if(!me){m.textContent=t("needMe");m.className="status bad";$("me").scrollIntoView({block:"center"});return}
+  if(!me){askName(sendChat);return}
   if(!text||!CHAT)return;
   const p={t:Date.now(),who:me,text,pend:true,sending:true};PEND.push(p);lastChat=Date.now();
   $("ctext").value="";m.textContent="";m.className="status";const el=$("msgs");if(el)el.dataset.init="";drawMsgs();$("ctext").focus();
@@ -454,8 +459,15 @@ async function load1(){
   if(JSON.stringify(PICKS)!==before){drawMap();drawList()}
   drawStatus();
 }
+// 이름을 안 고르고 누르면 이름 고르기 팝업을 띄우고, 고르면 누르려던 동작(투표, 글, 채팅)을 이어서 한다
+let nextAct=null;
+function askName(then){
+  nextAct=then;$("pickT").textContent=t("pickT");$("pickX").textContent=t("pickX");
+  $("pickC").innerHTML=MEMBERS.map(m=>`<button class="chip" data-pm="${m[0]}">${mname(m)}</button>`).join("");
+  const d=$("pick");if(d.showModal)d.showModal();else{msg="needMe";drawStatus();$("me").scrollIntoView({block:"center"})}
+}
 async function vote(pid,o){
-  if(!me){msg="needMe";drawStatus();$("me").scrollIntoView({block:"center"});return}
+  if(!me){askName(()=>vote(pid,o));return}
   msg="";const mine={...PICKS[me]};
   if(mine[pid]===o)delete mine[pid];else mine[pid]=o;
   PICKS[me]=mine;ver++;pending++;
@@ -497,7 +509,9 @@ async function loadWx(){
 }
 function render(){drawChrome();drawMe();drawStatus();drawMap();drawList();drawBoard();drawChat()}
 document.addEventListener("click",e=>{
-  const b=e.target.closest("[data-l],[data-d],[data-m],[data-v]");if(!b)return;
+  const b=e.target.closest("[data-l],[data-d],[data-m],[data-v],[data-pm],#pickX");if(!b)return;
+  if(b.id==="pickX"){$("pick").close();nextAct=null;return}
+  if(b.dataset.pm){me=b.dataset.pm;try{localStorage.setItem("jeju-me",me)}catch(x){}msg="";$("pick").close();drawMe();drawStatus();drawList();drawMsgs();const f=nextAct;nextAct=null;if(f)f();return}
   if(b.dataset.l){lang=b.dataset.l;try{localStorage.setItem("jeju-lang",lang)}catch(x){}render();return}
   if(b.dataset.d){day=b.dataset.d;drawChrome();drawMap();drawList();return}
   if(b.dataset.m){me=b.dataset.m;try{localStorage.setItem("jeju-me",me)}catch(x){}if(msg==="needMe")msg="";drawMe();drawStatus();drawList();return}
