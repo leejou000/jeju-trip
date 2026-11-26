@@ -326,6 +326,7 @@ const REPLIES={
  "1795659400212":"",
  "1795660024591":["방금 고쳤어요. 엔터 치면 내 메시지가 바로 뜨고, 채팅 중엔 2초마다 새로 읽어요. 안 바뀌어 보이면 새로고침 한 번 해주세요","Just fixed: your message shows right after Enter, and chat refreshes every 2 s. Refresh once if it still looks old"],
  "1795660026998":["2일차 15:30 투표에 「제주 중문카트」를 세 번째 선택지로 넣었어요","Added Jungmun Go-Kart as a third option to the Day 2 15:30 vote"],
+ "1795661209761":["지금은 정현이 정한 규칙(차 안 다수결, 운전자는 동점일 때만)대로예요. 1일차 16:50은 다운은 a지만 같은 차 수현, 카밀라가 b라서 다운 차가 b예요. 규칙을 바꿀지는 정현이 확인하고 정할게요","It follows Jeonghyeon's rule now (majority in the car, driver breaks ties): Day 1 16:50 Daun picked a but Suhyeon and Camila picked b. Jeonghyeon will decide whether to change it"],
  "1795660928314":["2일차 13:30 투표에 서귀포자연휴양림을 세 번째 선택지로 넣었어요","Added Seogwipo Natural Recreation Forest as a third option at Day 2 13:30"],
  "1795660825298":["맞아요. 서연 공항 내려주기는 3일차 19:00 고정 일정으로 따로 빼고, 투표는 「도두 카페 아니면 동문시장」만 남겼어요","Right: the Seoyeon airport drop-off is now its own fixed stop at Day 3 19:00, and the vote is just Dodu café or Dongmun Market"],
  "1795660191595":["3일차 16:00을 「한담 산책 아니면 9.81파크」 투표로 바꿨어요. 애월 동선 안쪽이라 잘 맞아요","Day 3 16:00 is now \"Handam walk or 9.81 Park\"; it sits right on the Aewol route"],
@@ -339,7 +340,7 @@ const REPLIES={
  "1795659146546":["채팅 만들었어요. 일정 아래 「채팅」에서 바로 이야기하세요","Chat is added; use the Chat box below the schedule"],
  "1795658570702":["3일차 19:00을 투표로 바꾸고 제주 동문시장 야시장을 넣었어요 (보통 18:00~24:00)","Day 3 19:00 is now a vote with Jeju Dongmun Market night market (usually 18:00 to 24:00)"]
 };
-const OPEN=[]; // 정현 판단을 기다리는 글의 at (문자열). 정하면 빼고 REPLIES 답을 바꾼다
+const OPEN=["1795661209761"]; // 정현 판단을 기다리는 글의 at (문자열). 정하면 빼고 REPLIES 답을 바꾼다
 let archOpen=false;document.addEventListener("toggle",e=>{if(e.target.id==="arch")archOpen=e.target.open},true);
 let POSTS=[],BOARD=false; // BOARD: 서버가 게시판을 아는 새 버전인지 (옛 서버에 글을 보내면 투표가 지워짐)
 function setPosts(ps){
